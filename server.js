@@ -26,6 +26,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(express.static(__dirname));
+// ADD THESE EXPLICIT ROUTES FOR VERCEL
+app.use('/css', express.static(path.join(__dirname, 'css')));
+app.use('/js', express.static(path.join(__dirname, 'js')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/fonts', express.static(path.join(__dirname, 'fonts')));
+app.use('/icon', express.static(path.join(__dirname, 'icon')));
+app.use('/pages', express.static(path.join(__dirname, 'pages')));
 
 // ===========================
 // ROOT ROUTE
