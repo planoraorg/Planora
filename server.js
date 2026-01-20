@@ -38,14 +38,20 @@ app.get("/", (req, res) => {
 // FIREBASE SETUP
 // ===========================
 // NOTE: User must place serviceAccountKey.json in the root directory
-// or set GOOGLE_APPLICATION_CREDENTIALS env variable
+// or set FIREBASE_SERVICE_ACCOUNT_KEY env variable (for Vercel)
 try {
-  const serviceAccount = JSON.parse(
-    fs.readFileSync(path.join(__dirname, "serviceAccountKey.json"), "utf8")
-  );
+  let serviceAccount;
+  if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
+    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+  } else {
+    serviceAccount = JSON.parse(
+      fs.readFileSync(path.join(__dirname, "serviceAccountKey.json"), "utf8")
+    );
+  }
+
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET, // Optional if using storage later
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
   });
   console.log("✅ Firebase Admin Initialized Successfully");
 } catch (error) {
