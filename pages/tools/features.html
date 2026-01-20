@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planora - Plan According to your Aura</title>
+    <link rel="icon" type="image/png" href="icon/Planora-logo-removebg-preview.png">
+
+    <!-- Bootstrap & FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(120deg, #f0f2f5, #dce3f0);
+            min-height: 100vh;
+        }
+
+        .hero-section {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 60px 0 40px;
+            text-align: center;
+        }
+
+        .tool-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .tool-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ffb703, #fb8500);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .lock-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(20, 33, 61, 0.7);
+            backdrop-filter: blur(3px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .tool-card:hover .lock-overlay {
+            opacity: 1;
+        }
+
+        .lock-content {
+            text-align: center;
+            color: white;
+        }
+
+        .lock-content i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #ffb703;
+        }
+
+        .btn-access {
+            background: #ffb703;
+            border: none;
+            color: #141032;
+            font-weight: 600;
+            padding: 12px 30px;
+            border-radius: 10px;
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+
+        .btn-access:hover {
+            transform: scale(1.05);
+            background: #fb8500;
+            color: white;
+        }
+
+        .feature-badge {
+            display: inline-block;
+            background: #ffb703;
+            color: #141032;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .unlocked .lock-overlay {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <div id="planora-navbar"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/navbar.js"></script>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 style="font-weight: 700; font-size: 2.5rem;">Powerful Tools & Features</h1>
+            <p style="font-size: 1.2rem;">Everything you need to plan, design, and build your dream space</p>
+        </div>
+    </section>
+
+    <!-- Tools Grid -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <!-- AI Design Generator -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="tool-card" onclick="accessTool('ai-design-generator.html')">
+                        <div class="tool-icon">
+                            <i class="fas fa-magic"></i>
+                        </div>
+                        <span class="feature-badge">AI-Powered</span>
+                        <h4 style="color: #14213d; font-weight: 600;">AI Design Generator</h4>
+                        <p>Transform your space with AI-generated interior designs. Upload a photo and get stunning
+                            design suggestions instantly.</p>
+                        <ul style="font-size: 0.9rem; color: #555;">
+                            <li>Multiple style options</li>
+                            <li>Instant results</li>
+                            <li>High-quality renders</li>
+                        </ul>
+                        <div class="lock-overlay">
+                            <div class="lock-content">
+                                <i class="fas fa-lock"></i>
+                                <h5>Login Required</h5>
+                                <button class="btn btn-access" onclick="redirectToLogin(event)">Access Tool</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cost Calculator -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="tool-card" onclick="accessTool('cost-calculator.html')">
+                        <div class="tool-icon">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <span class="feature-badge">Popular</span>
+                        <h4 style="color: #14213d; font-weight: 600;">Cost Calculator</h4>
+                        <p>Get accurate cost estimates for your construction or renovation project based on area,
+                            materials, and specifications.</p>
+                        <ul style="font-size: 0.9rem; color: #555;">
+                            <li>Detailed breakdown</li>
+                            <li>Material costs</li>
+                            <li>Labor estimates</li>
+                        </ul>
+                        <div class="lock-overlay">
+                            <div class="lock-content">
+                                <i class="fas fa-lock"></i>
+                                <h5>Login Required</h5>
+                                <button class="btn btn-access" onclick="redirectToLogin(event)">Access Tool</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vastu Calculator -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="tool-card" onclick="accessTool('vastu-calculator.html')">
+                        <div class="tool-icon">
+                            <i class="fas fa-compass"></i>
+                        </div>
+                        <span class="feature-badge">Traditional</span>
+                        <h4 style="color: #14213d; font-weight: 600;">Vastu Compliance Checker</h4>
+                        <p>Ensure your home aligns with Vastu Shastra principles for harmony and positive energy flow.
+                        </p>
+                        <ul style="font-size: 0.9rem; color: #555;">
+                            <li>Comprehensive analysis</li>
+                            <li>Direction guidance</li>
+                            <li>Remedies included</li>
+                        </ul>
+                        <div class="lock-overlay">
+                            <div class="lock-content">
+                                <i class="fas fa-lock"></i>
+                                <h5>Login Required</h5>
+                                <button class="btn btn-access" onclick="redirectToLogin(event)">Access Tool</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Smart Requirements -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="tool-card" onclick="accessTool('smart-requirements.html')">
+                        <div class="tool-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <span class="feature-badge">Essential</span>
+                        <h4 style="color: #14213d; font-weight: 600;">Smart Requirements Form</h4>
+                        <p>Define your project needs with our intelligent multi-step form. Get matched with perfect
+                            professionals.</p>
+                        <ul style="font-size: 0.9rem; color: #555;">
+                            <li>Step-by-step guidance</li>
+                            <li>Auto-save progress</li>
+                            <li>Professional matching</li>
+                        </ul>
+                        <div class="lock-overlay">
+                            <div class="lock-content">
+                                <i class="fas fa-lock"></i>
+                                <h5>Login Required</h5>
+                                <button class="btn btn-access" onclick="redirectToLogin(event)">Access Tool</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3D Preview -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="tool-card" onclick="accessTool('/pages/projects/3d-preview.html')">
+                        <div class="tool-icon">
+                            <i class="fas fa-cube"></i>
+                        </div>
+                        <span class="feature-badge">Advanced</span>
+                        <h4 style="color: #14213d; font-weight: 600;">3D Visualization</h4>
+                        <p>View your designs in stunning 3D. Upload floor plans and see your space come to life.</p>
+                        <ul style="font-size: 0.9rem; color: #555;">
+                            <li>Interactive 3D models</li>
+                            <li>Multiple views</li>
+                            <li>Export options</li>
+                        </ul>
+                        <div class="lock-overlay">
+                            <div class="lock-content">
+                                <i class="fas fa-lock"></i>
+                                <h5>Login Required</h5>
+                                <button class="btn btn-access" onclick="redirectToLogin(event)">Access Tool</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Management -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="tool-card" ">
+                        <div class=" tool-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <span class="feature-badge">Pro</span>
+                    <h4 style="color: #14213d; font-weight: 600;">Project Management</h4>
+                    <p>Track your project progress, manage tasks, collaborate with professionals, and stay on
+                        schedule.</p>
+                    <ul style="font-size: 0.9rem; color: #555;">
+                        <li>Timeline tracking</li>
+                        <li>File sharing</li>
+                        <li>Team collaboration</li>
+                    </ul>
+                    <div class="lock-overlay">
+                        <div class="lock-content">
+                            <i class="fas fa-lock"></i>
+                            <h5>Login Required</h5>
+                            <button class="btn btn-access" onclick="redirectToLogin(event)">Access Tool</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="text-center mt-5">
+            <div class="tool-card" style="max-width: 600px; margin: 0 auto;">
+                <h3 style="color: #14213d; font-weight: 600;">Ready to Get Started?</h3>
+                <p>Sign up now to unlock all tools and start planning your dream space!</p>
+                <a href="/pages/public/register.html" class="btn btn-access btn-lg">Create Free Account</a>
+            </div>
+        </div>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/navbar.js"></script>
+    <script>
+        function accessTool(url) {
+            if (!isAuthenticated()) {
+                return; // Let the overlay handle it
+            }
+            window.location.href = url;
+        }
+
+        function redirectToLogin(event) {
+            event.stopPropagation();
+            sessionStorage.setItem('redirectAfterLogin', window.location.href);
+            window.location.href = '/pages/public/login.html';
+        }
+
+        // Mark unlocked cards if logged in
+        document.addEventListener('DOMContentLoaded', function () {
+            if (isAuthenticated()) {
+                document.querySelectorAll('.tool-card').forEach(card => {
+                    card.classList.add('unlocked');
+                });
+            }
+        });
+    </script>
+
+    <!-- Dynamic Footer Container -->
+    <div id="planora-footer"></div>
+    <script src="/js/footer.js"></script>
+
+</body>
+
+</html>

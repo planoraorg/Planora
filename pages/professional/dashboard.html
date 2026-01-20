@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Dashboard - Planora</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="icon" type="image/png" href="icon/Planora-logo-removebg-preview.png">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <div id="planora-navbar"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/navbar.js"></script>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header text-center">
+                <img src="/images/user-icon.png" id="sidebarProfileImg" class="rounded-circle mb-2"
+                    style="width: 80px; height: 80px; object-fit: cover; border: 3px solid rgba(255,255,255,0.2);">
+                <h4>Dashboard</h4>
+                <p id="userName" class="mb-0"></p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#overview" class="nav-item active" onclick="showTab('overview')">
+                    <i class="fas fa-home"></i> Overview
+                </a>
+                <a href="#portfolio" class="nav-item" onclick="showTab('portfolio')">
+                    <i class="fas fa-briefcase"></i> My Portfolio
+                </a>
+                <div class="nav-item" onclick="showTab('bookings')">
+                    <i class="fas fa-calendar-check"></i> Bookings
+                </div>
+                <div class="nav-item" onclick="showTab('reviews')">
+                    <i class="fas fa-star"></i> Reviews & Ratings
+                </div>
+                <div class="nav-item" onclick="showTab('profile')">
+                    <i class="fas fa-user-cog"></i> Profile Settings
+                </div>
+                <a href="#" onclick="logout()" class="nav-item text-danger">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <!-- Overview Tab -->
+            <div class="tab-pane active" id="overview-tab">
+                <!-- Hero Header -->
+                <header style="
+                    background: linear-gradient(135deg, #181952, #190f39);
+                    padding: 25px 30px;
+                    color: white;
+                    border-radius: 15px;
+                    margin-bottom: 30px;
+                    border-bottom: 4px solid #8ed1fa;
+                ">
+                    <h1 style="font-size: 1.8rem; font-weight: 900; letter-spacing: 1px; margin: 0;">
+                        <i class="fas fa-chart-line"></i> DASHBOARD OVERVIEW
+                    </h1>
+                    <p style="font-size: 0.95rem; margin: 8px 0 0 0; opacity: 0.9;">
+                        Monitor Performance → Track Projects → View Analytics
+                    </p>
+                </header>
+
+                <!-- Stats -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-primary">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="projectsCount">0</h3>
+                                <p>Total Projects</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-success">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="ratingCount">0</h3>
+                                <p>Average Rating</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-warning">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="clientsCount">0</h3>
+                                <p>Total Clients</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-info">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="bookingsCount">0</h3>
+                                <p>Active Bookings</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bookings Requests Section -->
+                <div class="card shadow-lg border-0 rounded-4 mb-4"
+                    style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.4) !important;">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="mb-0" style="color: #14213d; font-weight: 700;">
+                                <i class="fas fa-calendar-alt me-2"></i>Booking Requests
+                            </h5>
+                            <span class="badge bg-primary" id="totalBookingsBadge">0</span>
+                        </div>
+
+                        <!-- Bookings Table -->
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead style="background: linear-gradient(135deg, #181952, #190f39); color: white;">
+                                    <tr>
+                                        <th>Client</th>
+                                        <th>Date & Time</th>
+                                        <th>Message</th>
+                                        <th>Status</th>
+                                        <th>Contact</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bookingsTableBody">
+                                    <tr>
+                                        <td colspan="6" class="text-center py-5 text-muted">
+                                            <i class="fas fa-calendar-times fa-3x mb-3 d-block"
+                                                style="opacity: 0.3;"></i>
+                                            Loading bookings...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="card shadow-lg border-0 rounded-4"
+                    style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.4) !important;">
+                    <div class="card-body p-4">
+                        <h5 class="mb-3" style="color: #14213d; font-weight: 700;">Recent Activity</h5>
+                        <p class="text-muted">Your recent projects and updates will appear here</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Portfolio Tab -->
+            <div class="tab-pane" id="portfolio-tab" style="display:none;">
+                <!-- Hero Header -->
+                <header style="
+                    background: linear-gradient(135deg, #181952, #190f39);
+                    padding: 25px 30px;
+                    color: white;
+                    border-radius: 15px;
+                    margin-bottom: 30px;
+                    border-bottom: 4px solid #8ed1fa;
+                ">
+                    <h1 style="font-size: 1.8rem; font-weight: 900; letter-spacing: 1px; margin: 0;">
+                        <i class="fas fa-briefcase"></i> MY PORTFOLIO
+                    </h1>
+                    <p style="font-size: 0.95rem; margin: 8px 0 0 0; opacity: 0.9;">
+                        Showcase Work → Manage Projects → Add New Work
+                    </p>
+                </header>
+
+                <div class="card shadow-lg border-0 rounded-4 mb-4"
+                    style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.4) !important;">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0" style="color: #14213d; font-weight: 700;">My Projects</h5>
+                            <button class="btn btn-primary btn-sm" onclick="alert('Add project feature coming soon!')">
+                                <i class="fas fa-plus me-2"></i>Add Project
+                            </button>
+                        </div>
+                        <div class="portfolio-grid" id="portfolioGrid">
+                            <p class="text-muted">Your portfolio projects will appear here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bookings Tab -->
+            <div class="tab-pane" id="bookings-tab" style="display:none;">
+                <!-- Hero Header -->
+                <header style="
+                    background: linear-gradient(135deg, #181952, #190f39);
+                    padding: 25px 30px;
+                    color: white;
+                    border-radius: 15px;
+                    margin-bottom: 30px;
+                    border-bottom: 4px solid #8ed1fa;
+                ">
+                    <h1 style="font-size: 1.8rem; font-weight: 900; letter-spacing: 1px; margin: 0;">
+                        <i class="fas fa-calendar-check"></i> MY BOOKINGS
+                    </h1>
+                    <p style="font-size: 0.95rem; margin: 8px 0 0 0; opacity: 0.9;">
+                        View Requests → Manage Appointments → Schedule Meetings
+                    </p>
+                </header>
+
+                <div class="card shadow-lg border-0 rounded-4"
+                    style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.4) !important;">
+                    <div class="card-body p-4">
+                        <h5 class="mb-3" style="color: #14213d; font-weight: 700;">Recent Booking Requests</h5>
+                        <div id="bookingsList">
+                            <p class="text-muted">No pending bookings</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews Tab -->
+            <div class="tab-pane" id="reviews-tab" style="display:none;">
+                <!-- Hero Header -->
+                <header style="
+                    background: linear-gradient(135deg, #181952, #190f39);
+                    padding: 25px 30px;
+                    color: white;
+                    border-radius: 15px;
+                    margin-bottom: 30px;
+                    border-bottom: 4px solid #8ed1fa;
+                ">
+                    <h1 style="font-size: 1.8rem; font-weight: 900; letter-spacing: 1px; margin: 0;">
+                        <i class="fas fa-star"></i> REVIEWS & RATINGS
+                    </h1>
+                    <p style="font-size: 0.95rem; margin: 8px 0 0 0; opacity: 0.9;">
+                        View Feedback → Monitor Rating → Improve Service
+                    </p>
+                </header>
+
+                <!-- Overall Rating Summary -->
+                <div class="card shadow-lg border-0 rounded-4 mb-4"
+                    style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.4) !important;">
+                    <div class="card-body p-4 text-center">
+                        <h3 class="mb-2" style="color: #14213d; font-weight: 700;">Overall Rating</h3>
+                        <div class="d-flex justify-content-center align-items-center gap-3">
+                            <h1 class="display-3 mb-0" style="color: #ffb703; font-weight: 900;" id="overallRating">0.0
+                            </h1>
+                            <div>
+                                <div id="ratingStars" style="font-size: 1.5rem; color: #ffb703;">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <p class="text-muted mb-0"><span id="totalReviewsText">0</span> Reviews</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reviews List -->
+                <div class="card shadow-lg border-0 rounded-4"
+                    style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.4) !important;">
+                    <div class="card-body p-4">
+                        <h5 class="mb-3" style="color: #14213d; font-weight: 700;">Client Reviews</h5>
+                        <div id="reviewsList">
+                            <p class="text-muted">No reviews yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Tab -->
+            <div class="tab-pane" id="profile-tab" style="display:none;">
+                <!-- Hero Header -->
+                <header style="
+                    background: linear-gradient(135deg, #181952, #190f39);
+                    padding: 25px 30px;
+                    color: white;
+                    border-radius: 15px;
+                    margin-bottom: 30px;
+                    border-bottom: 4px solid #8ed1fa;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                ">
+                    <div>
+                        <h1 style="font-size: 1.8rem; font-weight: 900; letter-spacing: 1px; margin: 0;">
+                            <i class="fas fa-user-cog"></i> PROFILE SETTINGS
+                        </h1>
+                        <p style="font-size: 0.95rem; margin: 8px 0 0 0; opacity: 0.9;">
+                            View Information → Update Details → Manage Account
+                        </p>
+                    </div>
+                    <a href="/pages/professional/edit-profile.html" class="btn btn-light btn-lg"
+                        style="font-weight: 600;">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </a>
+                </header>
+
+                <div class="card shadow-lg border-0 rounded-4"
+                    style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.4) !important;">
+                    <div class="card-body p-4">
+                        <h5 class="mb-3" style="color: #14213d; font-weight: 700;">Professional Information</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Name:</strong> <span id="profName">-</span></p>
+                                <p><strong>Email:</strong> <span id="profEmail">-</span></p>
+                                <p><strong>Specialization:</strong> <span id="profSpec">-</span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Phone:</strong> <span id="profPhone">-</span></p>
+                                <p><strong>City:</strong> <span id="profCity">-</span></p>
+                                <p><strong>Experience:</strong> <span id="profExp">-</span> years</p>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <p><strong>Bio:</strong></p>
+                            <p id="profBio" class="text-muted">No bio added yet</p>
+                        </div>
+                        <div class="mt-3">
+                            <p><strong>Hourly Rate:</strong> ₹<span id="profRate">-</span>/hr</p>
+                        </div>
+                        <div class="mt-4">
+                            <h6 style="color: #14213d; font-weight: 700;"><i class="fas fa-share-alt"></i> Social Links
+                            </h6>
+                            <div class="row mt-2">
+                                <div class="col-md-6" id="linkedinSection" style="display:none;">
+                                    <p><i class="fab fa-linkedin"></i> <a href="#" id="profLinkedin"
+                                            target="_blank">LinkedIn</a></p>
+                                </div>
+                                <div class="col-md-6" id="instagramSection" style="display:none;">
+                                    <p><i class="fab fa-instagram"></i> <a href="#" id="profInstagram"
+                                            target="_blank">Instagram</a></p>
+                                </div>
+                                <div class="col-md-6" id="websiteSection" style="display:none;">
+                                    <p><i class="fas fa-globe"></i> <a href="#" id="profWebsite"
+                                            target="_blank">Website</a></p>
+                                </div>
+                            </div>
+                            <p id="noSocialLinks" class="text-muted">No social links added</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        if (!requireAuth()) {
+            // Will redirect
+        } else {
+            const userData = getUserData();
+            if (userData.role !== 'professional') {
+                alert('This dashboard is for professionals only');
+                window.location.href = '/pages/user/dashboard.html';
+            }
+            document.getElementById('userName').textContent = userData.name;
+            document.getElementById('profName').textContent = userData.name;
+            document.getElementById('profEmail').textContent = userData.email;
+        }
+
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-pane').forEach(tab => tab.style.display = 'none');
+            // Remove active from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+
+            // Show selected tab
+            document.getElementById(tabName + '-tab').style.display = 'block';
+            // Add active to clicked nav item
+            event.target.closest('.nav-item').classList.add('active');
+        }
+
+        // Load professional data
+        async function loadProfessionalData() {
+            try {
+                const userData = getUserData();
+                console.log("📊 User Data:", userData);
+
+                const url = `/api/professionals/${userData.id}`;
+                console.log("📡 Fetching from:", url);
+
+                const response = await fetch(url);
+                console.log("📥 Response status:", response.status);
+
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log("✅ Received data:", result);
+
+                    // API returns {professional, projects, reviews}, extract professional
+                    const prof = result.professional || result;
+
+                    // Safe update function
+                    const update = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+                    // Update profile image
+                    if (prof.profile_image) {
+                        const imgPath = prof.profile_image.startsWith('http') ? prof.profile_image : '/' + prof.profile_image.replace(/\\/g, '/').replace(/^public\//, '');
+                        document.getElementById('sidebarProfileImg').src = imgPath;
+                    }
+
+                    // Update stats
+                    update('projectsCount', result.projects?.length || '0');
+                    update('ratingCount', prof.rating || 'N/A');
+                    update('reviewsCount', prof.total_reviews || '0');
+                    update('bookingsCount', '0');
+
+                    // Update profile tab
+                    update('profSpec', prof.specialization || '-');
+                    update('profPhone', prof.phone || '-');
+                    update('profCity', prof.city || '-');
+                    update('profExp', prof.experience_years || '0');
+                    update('profBio', prof.bio || 'No bio added yet');
+                    update('profRate', prof.hourly_rate || '-');
+
+                    // Update social links
+                    let hasSocialLinks = false;
+
+                    if (prof.linkedin) {
+                        document.getElementById('profLinkedin').href = prof.linkedin;
+                        document.getElementById('linkedinSection').style.display = 'block';
+                        hasSocialLinks = true;
+                    }
+                    if (prof.instagram) {
+                        document.getElementById('profInstagram').href = prof.instagram;
+                        document.getElementById('instagramSection').style.display = 'block';
+                        hasSocialLinks = true;
+                    }
+                    if (prof.website) {
+                        document.getElementById('profWebsite').href = prof.website;
+                        document.getElementById('websiteSection').style.display = 'block';
+                        hasSocialLinks = true;
+                    }
+
+                    // Show/hide "No social links" message
+                    const noLinksMsg = document.getElementById('noSocialLinks');
+                    if (noLinksMsg) {
+                        noLinksMsg.style.display = hasSocialLinks ? 'none' : 'block';
+                    }
+
+                    console.log("✅ All fields updated!");
+
+                    // Load and display reviews
+                    if (result.reviews && result.reviews.length > 0) {
+                        // Update overall rating
+                        document.getElementById('overallRating').textContent = prof.rating ? prof.rating.toFixed(1) : '0.0';
+                        document.getElementById('totalReviewsText').textContent = result.reviews.length;
+
+                        // Display star rating
+                        const rating = prof.rating || 0;
+                        const ratingStarsDiv = document.getElementById('ratingStars');
+                        let starsHTML = '';
+                        for (let i = 1; i <= 5; i++) {
+                            if (i <= Math.floor(rating)) {
+                                starsHTML += '<i class="fas fa-star"></i> ';
+                            } else if (i - 0.5 <= rating) {
+                                starsHTML += '<i class="fas fa-star-half-alt"></i> ';
+                            } else {
+                                starsHTML += '<i class="far fa-star"></i> ';
+                            }
+                        }
+                        ratingStarsDiv.innerHTML = starsHTML;
+
+                        // Display reviews
+                        const reviewsList = document.getElementById('reviewsList');
+                        let reviewsHTML = '';
+                        result.reviews.forEach(review => {
+                            const date = new Date(review.created_at).toLocaleDateString('en-IN', {
+                                year: 'numeric', month: 'short', day: 'numeric'
+                            });
+                            const stars = '⭐'.repeat(review.rating);
+
+                            reviewsHTML += `
+                                <div class="mb-4 pb-3 border-bottom">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <h6 class="mb-1" style="font-weight: 600;">${review.user_name || 'Anonymous'}</h6>
+                                            <small class="text-muted">${date}</small>
+                                        </div>
+                                        <div style="color: #ffb703; font-size: 1.1rem;">${stars}</div>
+                                    </div>
+                                    <p class="mb-0">${review.review_text || 'No comment provided'}</p>
+                                </div>
+                            `;
+                        });
+                        reviewsList.innerHTML = reviewsHTML;
+                    }
+
+                    // Display Projects in Portfolio Tab (Added during migration)
+                    if (result.projects && result.projects.length > 0) {
+                        const portfolioGrid = document.getElementById('portfolioGrid');
+                        portfolioGrid.className = 'row g-3'; // Ensure grid layout
+                        portfolioGrid.innerHTML = result.projects.map(p => {
+                            const img = (p.images && p.images[0]) ? p.images[0] : '/images/placeholder.jpg';
+                            const displayImg = (img.startsWith('/') || img.startsWith('http')) ? img : '/' + img;
+                            return `
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <img src="${displayImg}" class="card-img-top" style="height: 200px; object-fit: cover; border-radius: 8px;">
+                                        <div class="card-body p-2">
+                                            <h6 class="card-title mb-1">${p.title}</h6>
+                                            <small class="text-muted">${p.location || ''}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                } else {
+                    console.error("❌ Response not OK:", await response.text());
+                }
+            } catch (error) {
+                console.error('❌ Error loading professional data:', error);
+            }
+        }
+
+        // Load Bookings
+        async function loadBookings() {
+            try {
+                const response = await fetch('/api/bookings/professional', {
+                    headers: getAuthHeader()
+                });
+
+                if (!response.ok) throw new Error('Failed to load bookings');
+
+                const bookings = await response.json();
+                console.log('📋 Loaded bookings:', bookings.length);
+
+                // Sort bookings by date/time desc (newest first)
+                bookings.sort((a, b) => {
+                    const dateA = new Date(a.booking_date + ' ' + a.booking_time);
+                    const dateB = new Date(b.booking_date + ' ' + b.booking_time);
+                    return dateB - dateA;
+                });
+
+                // Update counts
+                document.getElementById('bookingsCount').textContent = bookings.filter(b => b.status === 'pending').length;
+                document.getElementById('totalBookingsBadge').textContent = bookings.length;
+
+                const tbody = document.getElementById('bookingsTableBody');
+
+                if (bookings.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-5 text-muted">
+                        <i class="fas fa-inbox fa-3x mb-3 d-block" style="opacity: 0.3;"></i>
+                        No booking requests yet</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = bookings.map(booking => {
+                    const statusColors = { pending: 'warning', confirmed: 'success', completed: 'info', cancelled: 'danger' };
+                    return `<tr>
+                        <td><strong>${booking.user_name || 'Unknown'}</strong><br><small class="text-muted">${booking.user_email || ''}</small></td>
+                        <td><i class="fas fa-calendar me-1"></i>${booking.booking_date}<br><small><i class="fas fa-clock me-1"></i>${booking.booking_time}</small></td>
+                        <td><small>${booking.message || 'No message'}</small></td>
+                        <td><span class="badge bg-${statusColors[booking.status] || 'secondary'}">${booking.status}</span></td>
+                        <td>${booking.user_email ? `<a href="mailto:${booking.user_email}" class="btn btn-sm btn-outline-primary"><i class="fas fa-envelope"></i></a>` : ''}</td>
+                        <td>${booking.status === 'pending' ? `<button class="btn btn-sm btn-success" onclick="updateStatus('${booking.id}', 'confirmed')"><i class="fas fa-check"></i></button>` : '<small class="text-muted">-</small>'}</td>
+                    </tr>`;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading bookings:', error);
+            }
+        }
+
+        async function updateStatus(bookingId, status) {
+            try {
+                const response = await fetch(`/api/bookings/${bookingId}/status`, {
+                    method: 'PUT',
+                    headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                if (response.ok) {
+                    alert(`✅ Booking ${status}!`);
+                    loadBookings();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Load data when page and DOM are fully loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log("🔄 Loading professional data...");
+            loadProfessionalData();
+            loadBookings(); // Load bookings too!
+        });
+    </script>
+
+    <!-- Dynamic Footer Container -->
+    <div id="planora-footer"></div>
+    <script src="/js/footer.js"></script>
+
+</body>
+
+</html>

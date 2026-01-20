@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planora - Plan According to your Aura</title>
+    <link rel="icon" type="image/png" href="icon/Planora-logo-removebg-preview.png">
+
+    <!-- Bootstrap & FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(120deg, #f0f2f5, #dce3f0);
+            min-height: 100vh;
+        }
+
+        .hero-section {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 80px 0 60px;
+            text-align: center;
+        }
+
+        .hero-section h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .hero-section p {
+            font-size: 1.3rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #ffb703, #fb8500);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .section-title {
+            color: #14213d;
+            font-weight: 700;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .how-it-works {
+            background: white;
+            padding: 60px 0;
+        }
+
+        .step-card {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: #ffb703;
+            color: #141032;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 20px;
+        }
+    </style></head>
+
+<body>
+    <!-- Navbar -->
+    <div id="planora-navbar"></div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1>About Planora</h1>
+            <p>Your one-stop platform for home design, planning, and connecting with verified professionals</p>
+        </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="section-title">Our Mission</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="feature-card text-center">
+                        <p style="font-size: 1.1rem; line-height: 1.8; color: #14213d;">
+                            Planora bridges the gap between homeowners and design professionals by providing
+                            powerful AI-driven tools, comprehensive calculators, and a trusted network of
+                            verified architects, interior designers, and contractors. We make home planning
+                            accessible, affordable, and efficient for everyone.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Features -->
+    <section class="py-5" style="background: white;">
+        <div class="container">
+            <h2 class="section-title">What We Offer</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h4 style="color: #14213d; font-weight: 600;">AI Design Tools</h4>
+                        <p>Generate stunning interior designs using AI, visualize your space in 3D, and explore endless
+                            possibilities.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <h4 style="color: #14213d; font-weight: 600;">Smart Calculators</h4>
+                        <p>Cost estimation, Vastu compliance checking, and project planning tools to make informed
+                            decisions.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h4 style="color: #14213d; font-weight: 600;">Verified Professionals</h4>
+                        <p>Connect with trusted architects, designers, and contractors with verified credentials and
+                            ratings.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h5 style="color: #14213d; font-weight: 600;">Sign Up</h5>
+                        <p>Create your free account as a homeowner or professional</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h5 style="color: #14213d; font-weight: 600;">Explore Tools</h5>
+                        <p>Use AI designers, calculators, and planning tools</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h5 style="color: #14213d; font-weight: 600;">Find Professionals</h5>
+                        <p>Browse verified professionals and view their portfolios</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="step-card">
+                        <div class="step-number">4</div>
+                        <h5 style="color: #14213d; font-weight: 600;">Start Building</h5>
+                        <p>Collaborate, manage projects, and bring your vision to life</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-5">
+                <a href="/pages/public/register.html" class="btn btn-lg"
+                    style="background: #ffb703; border: none; color: #141032; font-weight: 600; padding: 15px 40px; border-radius: 10px;">
+                    Get Started Free
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/navbar.js"></script>
+
+  <!-- Dynamic Footer Container -->
+  <div id="planora-footer"></div>
+  <script src="/js/footer.js"></script>
+
+</body>
+
+</html>

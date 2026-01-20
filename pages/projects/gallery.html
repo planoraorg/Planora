@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects | Planora</title>
+
+  <!-- BOOTSTRAP -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="icon" type="image/png" href="icon/Planora-logo-removebg-preview.png">
+
+  <!-- CUSTOM CSS -->
+  <style>
+    body {
+      background: #f7f7f7;
+      font-family: Arial, sans-serif;
+    }
+
+    .section-title {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #222;
+      text-align: center;
+    }
+
+    .project-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .project-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .project-card img {
+      height: 200px;
+      object-fit: cover;
+      border-bottom: 2px solid #eee;
+    }
+
+    .architect-name {
+      font-size: 14px;
+      color: #777;
+      margin-bottom: 10px;
+    }
+
+    .btn-details {
+      background: #1A1A1A;
+      color: #fff;
+      border-radius: 6px;
+      padding: 8px 15px;
+      transition: 0.3s;
+    }
+
+    .btn-details:hover {
+      background: #333;
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <div id="planora-navbar"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/navbar.js"></script>
+
+  <!-- PROJECTS SECTION -->
+  <div class="container my-5">
+    <h2 class="section-title">Our Professionals Projects</h2>
+
+    <!-- Loading Spinner -->
+    <div id="loading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+
+    <!-- API Error Message -->
+    <div id="error-msg" class="alert alert-danger text-center" style="display:none;">
+      Failed to load projects. Please try again later.
+    </div>
+
+    <div class="row g-4" id="projects-container">
+      <!-- Projects will be injected here dynamically -->
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const container = document.getElementById('projects-container');
+      const loading = document.getElementById('loading');
+      const errorMsg = document.getElementById('error-msg');
+
+      try {
+        const response = await fetch('/api/projects');
+        if (!response.ok) throw new Error('Failed to fetch projects');
+
+        const projects = await response.json();
+        loading.style.display = 'none';
+
+        if (projects.length === 0) {
+          container.innerHTML = '<div class="col-12 text-center text-muted"><p>No projects found.</p></div>';
+          return;
+        }
+
+        container.innerHTML = projects.map(project => {
+          // Handle image path (if array or string)
+          let imageSrc = '/images/placeholder.jpg';
+          if (project.images && project.images.length > 0) {
+            imageSrc = project.images[0];
+          } else if (project.image) {
+            // Backward compatibility if some data has 'image' field
+            imageSrc = project.image;
+          }
+
+          // Ensure path starts with /
+          if (imageSrc && !imageSrc.startsWith('/') && !imageSrc.startsWith('http')) {
+            imageSrc = '/' + imageSrc;
+          }
+
+          return `
+              <div class="col-md-4">
+                <div class="card project-card shadow-sm h-100">
+                  <img src="${imageSrc}" class="card-img-top" alt="${project.title}" style="height: 250px; object-fit: cover;">
+                  <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">${project.title}</h5>
+                    <p class="architect-name text-muted mb-2">
+                        <i class="fas fa-map-marker-alt me-1"></i> ${project.location || 'Location N/A'}
+                    </p>
+                     <p class="card-text text-truncate">${project.description || ''}</p>
+                    <div class="mt-auto">
+                        <a href="details.html?id=${project.id}" class="btn btn-details w-100">View Details</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+        }).join('');
+
+      } catch (err) {
+        console.error(err);
+        loading.style.display = 'none';
+        errorMsg.style.display = 'block';
+      }
+    });
+  </script>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <style>
+    .footer {
+      background: linear-gradient(90deg, #1b263b, #0d1b2a);
+    }
+  </style>
+
+
+  <!-- Dynamic Footer Container -->
+  <div id="planora-footer"></div>
+  <script src="/js/footer.js"></script>
+
+</body>
+
+</html>

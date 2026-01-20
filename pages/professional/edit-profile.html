@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - Planora</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/png" href="icon/Planora-logo-removebg-preview.png">
+    <style>
+        body {
+            background: linear-gradient(120deg, #f0f2f5, #dce3f0);
+            min-height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Dynamic Navbar -->
+    <div id="planora-navbar"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/navbar.js"></script>
+
+    <!-- Hero Header Section -->
+    <header style="
+    background: linear-gradient(135deg, #181952, #190f39);
+    padding: 30px 20px;
+    text-align: center;
+    color: white;
+    border-bottom: 4px solid #8ed1fa;
+  ">
+        <h1 style="font-size: 2rem; font-weight: 900; letter-spacing: 2px; margin: 0;">
+            EDIT PROFESSIONAL PROFILE
+        </h1>
+        <p style="font-size: 1rem; margin: 10px 0 0 0; opacity: 0.9;">
+            Update Your Information → Manage Documents → Save Changes
+        </p>
+    </header>
+
+    <div class="container" style="padding-top: 30px; padding-bottom: 50px; max-width: 1000px;">
+        <div class="text-end mb-4">
+            <a href="/pages/professional/dashboard.html" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <form id="profileForm" enctype="multipart/form-data">
+            <!-- Basic Information -->
+            <div class="card shadow-lg border-0 rounded-4 mb-4"
+                style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.4) !important;">
+                <div class="card-body p-4">
+                    <h5 class="mb-3" style="color: #14213d; font-weight: 700;"><i class="fas fa-user"></i> Basic
+                        Information</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Full Name *</label>
+                            <input type="text" class="form-control" id="editName" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Email *</label>
+                            <input type="email" class="form-control" id="editEmail" required disabled>
+                            <small class="text-muted">Email cannot be changed</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Phone Number *</label>
+                            <input type="tel" class="form-control" id="editPhone" placeholder="+91 9876543210" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Specialization *</label>
+                            <select class="form-select" id="editSpecialization" required>
+                                <option value="">Select Specialization</option>
+                                <option value="Architect">Architect</option>
+                                <option value="Interior Designer">Interior Designer</option>
+                                <option value="Structural Engineer">Structural Engineer</option>
+                                <option value="Landscape Designer">Landscape Designer</option>
+                                <option value="Urban Planner">Urban Planner</option>
+                                <option value="Contractor">Contractor</option>
+                                <option value="Carpenter">Carpenter</option>
+                                <option value="Electrician">Electrician</option>
+                                <option value="Plumber">Plumber</option>
+                                <option value="Painter">Painter</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Location Information -->
+            <div class="card shadow-lg border-0 rounded-4 mb-4"
+                style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.4) !important;">
+                <div class="card-body p-4">
+                    <h5 class="mb-3" style="color: #14213d; font-weight: 700;"><i class="fas fa-map-marker-alt"></i>
+                        Location</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">City *</label>
+                            <input type="text" class="form-control" id="editCity" placeholder="e.g., Mumbai" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">State *</label>
+                            <input type="text" class="form-control" id="editState" placeholder="e.g., Maharashtra"
+                                required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold">Full Address</label>
+                            <textarea class="form-control" id="editAddress" rows="2"
+                                placeholder="Complete address with pincode"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Professional Details -->
+            <div class="card shadow-lg border-0 rounded-4 mb-4"
+                style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.4) !important;">
+                <div class="card-body p-4">
+                    <h5 class="mb-3" style="color: #14213d; font-weight: 700;"><i class="fas fa-briefcase"></i>
+                        Professional Details</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Years of Experience *</label>
+                            <input type="number" class="form-control" id="editExperience" min="0" max="50"
+                                placeholder="e.g., 5" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Hourly Rate (₹) *</label>
+                            <input type="number" class="form-control" id="editRate" min="0" placeholder="e.g., 2500"
+                                required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold">Professional Bio</label>
+                            <textarea class="form-control" id="editBio" rows="4"
+                                placeholder="Tell clients about your expertise, specialties, and what makes you unique..."></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold">Skills (comma separated)</label>
+                            <input type="text" class="form-control" id="editSkills"
+                                placeholder="AutoCAD, SketchUp, 3DS Max, Revit, V-Ray">
+                            <small class="text-muted">Add your technical skills separated by commas</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documents Section -->
+            <div class="card shadow-lg border-0 rounded-4 mb-4"
+                style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.4) !important;">
+                <div class="card-body p-4">
+                    <h5 class="mb-3" style="color: #14213d; font-weight: 700;"><i class="fas fa-file-upload"></i>
+                        Professional Documents</h5>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Degree/Certification</label>
+                            <input type="file" class="form-control" id="degreeUpload" accept=".pdf,.jpg,.jpeg,.png">
+                            <small class="text-muted">Upload your degree certificate (PDF, JPG, PNG)</small>
+                            <div id="currentDegree" class="mt-2"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Professional License</label>
+                            <input type="file" class="form-control" id="licenseUpload" accept=".pdf,.jpg,.jpeg,.png">
+                            <small class="text-muted">Upload professional license if applicable</small>
+                            <div id="currentLicense" class="mt-2"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">ID Proof (Aadhar/PAN/Passport)</label>
+                            <input type="file" class="form-control" id="idProofUpload" accept=".pdf,.jpg,.jpeg,.png">
+                            <small class="text-muted">Upload government ID proof</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Profile Picture</label>
+                            <input type="file" class="form-control" id="profilePicUpload" accept=".jpg,.jpeg,.png">
+                            <small class="text-muted">Upload your professional photo</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Social Links (Optional) -->
+            <div class="card shadow-lg border-0 rounded-4 mb-4"
+                style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.4) !important;">
+                <div class="card-body p-4">
+                    <h5 class="mb-3" style="color: #14213d; font-weight: 700;"><i class="fas fa-share-alt"></i> Social
+                        Links (Optional)</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold"><i class="fab fa-linkedin"></i> LinkedIn Profile</label>
+                            <input type="url" class="form-control" id="editLinkedin"
+                                placeholder="https://linkedin.com/in/yourprofile">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold"><i class="fab fa-instagram"></i> Instagram</label>
+                            <input type="url" class="form-control" id="editInstagram"
+                                placeholder="https://instagram.com/yourhandle">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold"><i class="fas fa-globe"></i> Portfolio Website</label>
+                            <input type="url" class="form-control" id="editWebsite"
+                                placeholder="https://yourportfolio.com">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Save Button -->
+            <div class="text-end mb-4">
+                <button type="button" class="btn btn-outline-secondary btn-lg me-2"
+                    onclick="window.location.href='/pages/professional/dashboard.html'">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-save"></i> Save Profile
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        if (!requireAuth()) {
+            // Will redirect
+        }
+
+        const userData = getUserData();
+        document.getElementById('editEmail').value = userData.email;
+        document.getElementById('editName').value = userData.name;
+
+        // Load existing professional data
+        async function loadProfileData() {
+            try {
+                const response = await fetch(`/api/professionals/${userData.id}`);
+                if (response.ok) {
+                    const result = await response.json();
+                    // API returns {professional, projects, reviews}, we need the professional object
+                    const prof = result.professional || result;
+
+                    document.getElementById('editName').value = prof.name || '';
+                    document.getElementById('editPhone').value = prof.phone || '';
+                    document.getElementById('editSpecialization').value = prof.specialization || '';
+                    document.getElementById('editCity').value = prof.city || '';
+                    document.getElementById('editState').value = prof.state || '';
+                    document.getElementById('editAddress').value = prof.address || '';
+                    document.getElementById('editExperience').value = prof.experience_years || '';
+                    document.getElementById('editRate').value = prof.hourly_rate || '';
+                    document.getElementById('editBio').value = prof.bio || '';
+
+                    // Load social media links
+                    document.getElementById('editLinkedin').value = prof.linkedin || '';
+                    document.getElementById('editInstagram').value = prof.instagram || '';
+                    document.getElementById('editWebsite').value = prof.website || '';
+
+                    if (prof.degree_document) {
+                        document.getElementById('currentDegree').innerHTML = `<small class="text-success"><i class="fas fa-check-circle"></i> Document uploaded</small>`;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+        }
+
+        // Save profile
+        document.getElementById('profileForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData();
+            formData.append('name', document.getElementById('editName').value);
+            formData.append('phone', document.getElementById('editPhone').value);
+            formData.append('specialization', document.getElementById('editSpecialization').value);
+            formData.append('city', document.getElementById('editCity').value);
+            formData.append('state', document.getElementById('editState').value);
+            formData.append('address', document.getElementById('editAddress').value || '');
+            formData.append('experience_years', document.getElementById('editExperience').value);
+            formData.append('hourly_rate', document.getElementById('editRate').value);
+            formData.append('bio', document.getElementById('editBio').value);
+
+            // Add social media links
+            formData.append('linkedin', document.getElementById('editLinkedin').value || '');
+            formData.append('instagram', document.getElementById('editInstagram').value || '');
+            formData.append('website', document.getElementById('editWebsite').value || '');
+
+            // Add files if selected
+            const degreeFile = document.getElementById('degreeUpload').files[0];
+            if (degreeFile) formData.append('degree', degreeFile);
+
+            const licenseFile = document.getElementById('licenseUpload').files[0];
+            if (licenseFile) formData.append('license', licenseFile);
+
+            const profilePicFile = document.getElementById('profilePicUpload').files[0];
+            if (profilePicFile) formData.append('profilePic', profilePicFile);
+
+            try {
+                // Get token manually - don't use getAuthHeader() for FormData
+                const token = localStorage.getItem('planora_token');
+
+                const response = await fetch(`/api/professionals/${userData.id}/update`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                        // Do NOT set Content-Type for FormData - browser sets it automatically
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.token) {
+                        saveAuthToken(result.token);
+                    }
+
+                    showSuccessModal('Profile Updated!', 'Your professional profile has been updated successfully.');
+
+                    // Redirect to dashboard after 1.5 seconds
+                    setTimeout(() => {
+                        window.location.href = '/pages/professional/dashboard.html';
+                    }, 1500);
+                } else {
+                    const error = await response.json();
+                    showErrorModal('Update Failed', error.message || 'Failed to update profile. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showErrorModal('Connection Error', 'Unable to connect to server. Please try again.');
+            }
+        });
+
+        function showSuccessModal(title, message) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalIcon').innerHTML = '<i class="fas fa-check-circle fa-3x text-success"></i>';
+            document.getElementById('modalMessage').textContent = message;
+            const modal = new bootstrap.Modal(document.getElementById('feedbackModal'));
+            modal.show();
+        }
+
+        function showErrorModal(title, message) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalIcon').innerHTML = '<i class="fas fa-exclamation-circle fa-3x text-danger"></i>';
+            document.getElementById('modalMessage').textContent = message;
+            const modal = new bootstrap.Modal(document.getElementById('feedbackModal'));
+            modal.show();
+        }
+
+        loadProfileData();
+    </script>
+
+    <!-- Feedback Modal -->
+    <div class="modal fade" id="feedbackModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-body text-center p-5">
+                    <div id="modalIcon" class="mb-3"></div>
+                    <h4 id="modalTitle" class="mb-3"></h4>
+                    <p id="modalMessage" class="text-muted"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dynamic Footer Container -->
+    <div id="planora-footer"></div>
+    <script src="/js/footer.js"></script>
+
+</body>
+
+</html>

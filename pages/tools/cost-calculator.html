@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Auth Protection -->
+
+
+  <script src="/js/navbar.js"></script>
+
+
+  <script>
+    // Redirect to login if not authenticated
+    if (!isAuthenticated()) {
+      sessionStorage.setItem('redirectAfterLogin', window.location.pathname.split('/').pop());
+      window.location.href = '/pages/public/login.html';
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cost Calculator - Planora</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="icon" type="image/png" href="icon/Planora-logo-removebg-preview.png">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <div id="planora-navbar"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/navbar.js"></script>
+
+  <!-- Hero Header Section -->
+  <header style="
+    background: linear-gradient(135deg, #181952, #190f39);
+    padding: 40px 20px;
+    text-align: center;
+    color: white;
+    border-bottom: 4px solid #8ed1fa;
+    position: relative;
+    overflow: hidden;
+  ">
+    <!-- Subtle floating glowing circles -->
+    <div style="
+      position:absolute;
+      width:150px;
+      height:150px;
+      background:rgba(255,180,0,0.15);
+      border-radius:50%;
+      top:-40px;
+      left:-40px;
+      filter:blur(30px);
+      animation: float1 6s infinite alternate ease-in-out;
+    "></div>
+
+    <div style="
+      position:absolute;
+      width:180px;
+      height:180px;
+      background:rgba(142,209,250,0.12);
+      border-radius:50%;
+      bottom:-50px;
+      right:-50px;
+      filter:blur(30px);
+      animation: float2 7s infinite alternate ease-in-out;
+    "></div>
+
+    <h1 style="
+      font-size: 2.5rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      margin: 0 0 15px;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+      position: relative;
+      z-index: 2;
+    ">
+      DYNAMIC COST CALCULATOR
+    </h1>
+
+    <p style="
+      font-size: 1.1rem;
+      margin: 0;
+      opacity: 0.9;
+      font-weight: 400;
+      position: relative;
+      z-index: 2;
+    ">Estimate Your Project → Get Detailed Breakdown → Plan Your Budget</p>
+
+    <style>
+      @keyframes float1 {
+        from {
+          transform: translate(0, 0) scale(1);
+        }
+
+        to {
+          transform: translate(20px, 15px) scale(1.1);
+        }
+      }
+
+      @keyframes float2 {
+        from {
+          transform: translate(0, 0) scale(1);
+        }
+
+        to {
+          transform: translate(-15px, -20px) scale(1.15);
+        }
+      }
+    </style>
+  </header>
+
+  <div class="container" style="padding-top: 20px; padding-bottom: 50px;">
+    <div class="row">
+      <div class="col-md-10 mx-auto">
+        <div class="d-flex align-items-center mb-4">
+
+        </div>
+
+        <div class="row g-4">
+          <!-- Input Form -->
+          <div class="col-lg-5">
+            <div class="card shadow-lg border-0 rounded-4"
+              style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.4) !important;">
+              <div class="card-body p-4">
+                <h5 class="mb-4" style="color: #14213d; font-weight: 700;">Project Details</h5>
+                <form id="costForm">
+                  <div class="mb-3">
+                    <label class="form-label">Project Type</label>
+                    <select class="form-select" id="projectType" required>
+                      <option value="">Select Type</option>
+                      <option value="1BHK">1BHK Apartment</option>
+                      <option value="2BHK">2BHK Apartment</option>
+                      <option value="3BHK">3BHK Apartment</option>
+                      <option value="Villa">Villa</option>
+                      <option value="Commercial">Commercial Space</option>
+                    </select>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label">Area (sq ft)</label>
+                    <input type="number" class="form-control" id="area" placeholder="e.g., 1200" min="100" required>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label">Location/City</label>
+                    <input type="text" class="form-control" id="location" placeholder="e.g., Mumbai" required>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label">Quality Level</label>
+                    <select class="form-select" id="qualityLevel" required>
+                      <option value="">Select Quality</option>
+                      <option value="Low">Standard (Budget-friendly)</option>
+                      <option value="Medium">Premium (Mid-range)</option>
+                      <option value="High">Luxury (High-end)</option>
+                      <option value="Luxury">Ultra-Luxury (Premium)</option>
+                    </select>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label">Number of Rooms</label>
+                    <input type="number" class="form-control" id="numRooms" placeholder="e.g., 3" min="1" value="3"
+                      required>
+                  </div>
+
+                  <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                      <i class="fas fa-calculator me-2"></i>Calculate Cost
+                    </button>
+                    <button type="button" id="saveBtn" class="btn btn-success" style="display:none;">
+                      <i class="fas fa-save me-2"></i>Save Estimate
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Results -->
+          <div class="col-lg-7">
+            <div class="card shadow-lg border-0 rounded-4"
+              style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.4) !important;">
+              <div class="card-body p-4">
+                <h5 class="mb-4" style="color: #14213d; font-weight: 700;">Cost Breakdown</h5>
+                <div id="results" class="text-center text-muted">
+                  <i class="fas fa-chart-pie fa-3x mb-3 opacity-50"></i>
+                  <p>Enter project details and click Calculate to see cost breakdown</p>
+                </div>
+
+                <div id="chartContainer" style="display:none;">
+                  <canvas id="costChart"></canvas>
+
+                  <div class="mt-4" id="breakdownDetails">
+                    <!-- Will be populated dynamically -->
+                  </div>
+
+                  <div class="alert alert-info mt-4">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Note:</strong> This is an estimated cost based on average market rates.
+                    Actual costs may vary based on materials, labor availability, and specific
+                    requirements.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Saved Estimates -->
+            <div class="card shadow-lg border-0 rounded-4 mt-4" id="savedEstimates"
+              style="display:none; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.4) !important;">
+              <div class="card-body p-4">
+                <h5 class="mb-3" style="color: #14213d; font-weight: 700;">Saved Estimates</h5>
+                <div id="estimatesList">
+                  <!-- Will be populated -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Require authentication
+    if (!requireAuth()) {
+      // Will redirect
+    }
+
+    let currentEstimate = null;
+    let costChart = null;
+
+    document.getElementById('costForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const projectType = document.getElementById('projectType').value;
+      const area = parseFloat(document.getElementById('area').value);
+      const location = document.getElementById('location').value;
+      const qualityLevel = document.getElementById('qualityLevel').value;
+      const numRooms = parseInt(document.getElementById('numRooms').value);
+
+      try {
+        const response = await fetch('/api/cost-estimate', {
+          method: 'POST',
+          headers: getAuthHeader(),
+          body: JSON.stringify({
+            project_type: projectType,
+            area,
+            location,
+            quality_level: qualityLevel,
+            num_rooms: numRooms
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          currentEstimate = result;
+          displayResults(result.breakdown);
+          document.getElementById('saveBtn').style.display = 'block';
+        } else {
+          alert(result.error || 'Calculation failed');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to calculate. Please try again.');
+      }
+    });
+
+    function displayResults(breakdown) {
+      document.getElementById('results').style.display = 'none';
+      document.getElementById('chartContainer').style.display = 'block';
+
+      // Create/Update Chart
+      const ctx = document.getElementById('costChart').getContext('2d');
+
+      if (costChart) {
+        costChart.destroy();
+      }
+
+      costChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Material', 'Labor', 'Design', 'Permits'],
+          datasets: [{
+            data: [
+              breakdown.material_cost,
+              breakdown.labor_cost,
+              breakdown.design_cost,
+              breakdown.permit_cost
+            ],
+            backgroundColor: [
+              '#667eea',
+              '#f093fb',
+              '#ffecd2',
+              '#a1c4fd'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            },
+            title: {
+              display: true,
+              text: `Total: ₹${breakdown.total_cost.toLocaleString('en-IN')}`
+            }
+          }
+        }
+      });
+
+      // Display breakdown details
+      document.getElementById('breakdownDetails').innerHTML = `
+        <div class="row g-3 mt-2">
+          <div class="col-6">
+            <div class="p-3 bg-light rounded">
+              <small class="text-muted">Material Cost</small>
+              <h5 class="mb-0">₹${breakdown.material_cost.toLocaleString('en-IN')}</h5>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 bg-light rounded">
+              <small class="text-muted">Labor Cost</small>
+              <h5 class="mb-0">₹${breakdown.labor_cost.toLocaleString('en-IN')}</h5>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 bg-light rounded">
+              <small class="text-muted">Design Cost</small>
+              <h5 class="mb-0">₹${breakdown.design_cost.toLocaleString('en-IN')}</h5>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 bg-light rounded">
+              <small class="text-muted">Permits</small>
+              <h5 class="mb-0">₹${breakdown.permit_cost.toLocaleString('en-IN')}</h5>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="p-3 gradient-bg rounded text-white text-center">
+              <small>Total Estimated Cost</small>
+              <h3 class="mb-0">₹${breakdown.total_cost.toLocaleString('en-IN')}</h3>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    document.getElementById('saveBtn').addEventListener('click', function () {
+      if (currentEstimate) {
+        alert('Estimate saved successfully!');
+        loadSavedEstimates();
+      }
+    });
+
+    async function loadSavedEstimates() {
+      try {
+        const response = await fetch('/api/cost-estimates', {
+          headers: getAuthHeader()
+        });
+
+        if (response.ok) {
+          const estimates = await response.json();
+          if (estimates.length > 0) {
+            document.getElementById('savedEstimates').style.display = 'block';
+            document.getElementById('estimatesList').innerHTML = estimates.slice(0, 5).map(e => `
+              <div class="border-bottom pb-2 mb-2">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <strong>${e.project_type}</strong> - ${e.area} sq ft
+                    <br><small class="text-muted">${new Date(e.created_at).toLocaleDateString()}</small>
+                  </div>
+                  <div class="text-end">
+                    <strong class="text-primary">₹${Math.round(e.total_cost).toLocaleString('en-IN')}</strong>
+                  </div>
+                </div>
+              </div>
+            `).join('');
+          }
+        }
+      } catch (error) {
+        console.error('Error loading estimates:', error);
+      }
+    }
+
+    // Load saved on page load
+    loadSavedEstimates();
+  </script>
+
+  <!-- Dynamic Footer Container -->
+  <div id="planora-footer"></div>
+  <script src="/js/footer.js"></script>
+
+</body>
+
+</html>

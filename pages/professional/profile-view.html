@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Auth Protection -->
+    <script src="/js/auth.js"></script>
+    <script src="/js/navbar.js"></script>
+    <script>
+        // Auth check removed for public access
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Profile - Planora</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="icon" type="image/png" href="icon/Planora-logo-removebg-preview.png">
+    <style>
+        .profile-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .profile-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #ffb703;
+        }
+
+        .badge-specialization {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .stat-box {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #14213d;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .rating-stars {
+            color: #ffb703;
+            font-size: 1.2rem;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #14213d;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title i {
+            color: #ffb703;
+            margin-right: 10px;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            height: 100%;
+        }
+
+        .project-card {
+            border-radius: 12px;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .review-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .schedule-btn {
+            background: linear-gradient(90deg, #ff6b6b, #ee5a52);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 600;
+            width: 100%;
+            transition: 0.3s;
+        }
+
+        .schedule-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(238, 90, 82, 0.4);
+            color: white;
+        }
+
+        .verified-badge {
+            background: #00bfa6;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+        }
+
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            color: #333;
+            margin-right: 10px;
+            transition: 0.3s;
+        }
+
+        .social-link:hover {
+            background: #ffb703;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <div id="planora-navbar"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/navbar.js"></script>
+
+    <!-- Hero Header Section -->
+    <header style="
+    background: linear-gradient(135deg, #181952, #190f39);
+    padding: 30px 20px;
+    text-align: center;
+    color: white;
+    border-bottom: 4px solid #8ed1fa;
+  ">
+        <h1 style="font-size: 2rem; font-weight: 900; letter-spacing: 2px; margin: 0;">
+            PROFESSIONAL PROFILE
+        </h1>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container" style="padding-top: 30px; padding-bottom: 50px;">
+
+        <!-- Loading State -->
+        <div id="loadingState" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3 text-muted">Loading profile...</p>
+        </div>
+
+        <!-- Profile Content -->
+        <div id="profileContent" style="display: none;">
+            <div class="row g-4">
+
+                <!-- Left Column - Main Info -->
+                <div class="col-lg-8">
+                    <!-- Profile Header -->
+                    <div class="profile-card mb-4">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <img id="profileImage" src="/images/default-avatar.png" class="profile-image"
+                                    alt="Profile">
+                            </div>
+                            <div class="col">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <h2 id="profileName" class="mb-0" style="font-weight: 800; color: #14213d;">
+                                        Professional Name</h2>
+                                    <span id="verifiedBadge" class="verified-badge" style="display: none;"><i
+                                            class="fas fa-check me-1"></i>Verified</span>
+                                </div>
+                                <p class="mb-2 text-muted">
+                                    <span id="profileSpecialization" class="badge-specialization">Specialization</span>
+                                    <span class="ms-2"><i class="fas fa-map-marker-alt me-1"></i><span
+                                            id="profileLocation">Location</span></span>
+                                </p>
+                                <p id="profileBio" class="mb-0 text-muted"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statistics -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-3 col-6">
+                            <div class="stat-box">
+                                <div class="stat-number" id="statExperience">0</div>
+                                <div class="stat-label">Years Experience</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stat-box">
+                                <div class="stat-number" id="statProjects">0</div>
+                                <div class="stat-label">Projects</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stat-box">
+                                <div class="stat-number" id="statReviews">0</div>
+                                <div class="stat-label">Reviews</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stat-box">
+                                <div class="rating-stars" id="statRating">
+                                    <i class="fas fa-star"></i> 0.0
+                                </div>
+                                <div class="stat-label">Rating</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Education & Awards -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <div class="info-card">
+                                <h5 class="section-title"><i class="fas fa-graduation-cap"></i> Education</h5>
+                                <ul id="educationList" class="list-unstyled mb-0">
+                                    <li class="text-muted">No education details provided</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-card">
+                                <h5 class="section-title"><i class="fas fa-award"></i> Awards & Recognition</h5>
+                                <ul id="awardsList" class="list-unstyled mb-0">
+                                    <li class="text-muted">No awards listed</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Projects -->
+                    <div class="profile-card mb-4">
+                        <h5 class="section-title"><i class="fas fa-briefcase"></i> Projects</h5>
+                        <div class="row g-3" id="projectsList">
+                            <div class="col-12 text-center text-muted py-4">
+                                <i class="fas fa-folder-open fa-2x mb-2"></i>
+                                <p>No projects to display</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reviews -->
+                    <div class="profile-card">
+                        <h5 class="section-title"><i class="fas fa-star"></i> Reviews</h5>
+                        <div id="reviewsList">
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-comments fa-2x mb-2"></i>
+                                <p>No reviews yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Actions -->
+                <div class="col-lg-4">
+                    <div class="profile-card sticky-top" style="top: 100px;">
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Experience</span>
+                                <span id="sideExperience" class="fw-bold">0 yrs</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Rating</span>
+                                <span id="sideRating" class="fw-bold text-warning"><i class="fas fa-star"></i> 0.0 /
+                                    5</span>
+                            </div>
+                        </div>
+
+                        <button class="schedule-btn mb-3" onclick="scheduleMeeting()">
+                            <i class="fas fa-calendar-alt me-2"></i> Schedule a Meeting
+                        </button>
+                        <p class="text-muted text-center small mb-4">First 3 consultations free. Afterwards ₹100 per
+                            meeting.</p>
+
+                        <!-- Social Links -->
+                        <div class="text-center mb-3">
+                            <h6 class="text-muted mb-3">Follow on</h6>
+                            <div id="socialLinks">
+                                <!-- Social links will be inserted here -->
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <a href="/pages/professional/browse.html" class="btn btn-outline-secondary w-100">
+                            <i class="fas fa-arrow-left me-2"></i> Back to Search
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" style="display: none;" class="text-center py-5">
+            <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+            <h4>Profile Not Found</h4>
+            <p class="text-muted">The professional profile you're looking for doesn't exist.</p>
+            <a href="/pages/professional/browse.html" class="btn btn-primary">Browse Professionals</a>
+        </div>
+    </div>
+
+    <!-- Dynamic Footer -->
+    <div id="planora-footer"></div>
+    <script src="/js/footer.js"></script>
+
+    <!-- Schedule Meeting Modal -->
+    <div class="modal fade" id="scheduleModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-calendar-alt me-2"></i>Schedule a Meeting</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="scheduleForm">
+                        <div class="mb-3">
+                            <label class="form-label">Preferred Date</label>
+                            <input type="date" class="form-control" id="meetingDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Preferred Time</label>
+                            <select class="form-select" id="meetingTime" required>
+                                <option value="">Select time</option>
+                                <option value="10:00">10:00 AM</option>
+                                <option value="11:00">11:00 AM</option>
+                                <option value="14:00">2:00 PM</option>
+                                <option value="15:00">3:00 PM</option>
+                                <option value="16:00">4:00 PM</option>
+                                <option value="17:00">5:00 PM</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Message (Optional)</label>
+                            <textarea class="form-control" id="meetingMessage" rows="3"
+                                placeholder="Describe your project or requirements..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Send Request</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get professional ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const professionalId = urlParams.get('id');
+
+        if (!professionalId) {
+            showError();
+        } else {
+            loadProfile(professionalId);
+        }
+
+        async function loadProfile(id) {
+            try {
+                const response = await fetch(`/api/professionals/${id}`);
+
+                if (!response.ok) {
+                    showError();
+                    return;
+                }
+
+                const data = await response.json();
+                displayProfile(data.professional, data.projects, data.reviews);
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                showError();
+            }
+        }
+
+        function formatImagePath(path) {
+            if (!path) return '/images/default-avatar.png'; // Default for profile
+            if (path.startsWith('http') || path.startsWith('/')) return path;
+            path = path.replace(/\\/g, '/');
+            return '/' + path;
+        }
+
+        function formatProjectImage(path) {
+            if (!path) return '/images/project-placeholder.jpg';
+            if (path.startsWith('http') || path.startsWith('/')) return path;
+            path = path.replace(/\\/g, '/');
+            return '/' + path;
+        }
+
+        function displayProfile(prof, projects, reviews) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('profileContent').style.display = 'block';
+
+            // Basic Info
+            document.getElementById('profileName').textContent = prof.name || 'Unknown';
+            document.getElementById('profileSpecialization').textContent = prof.specialization || 'Professional';
+            document.getElementById('profileLocation').textContent = `${prof.city || ''}, ${prof.state || ''}`.replace(/(^,\s*|,\s*$)/g, '') || 'Location not specified';
+            document.getElementById('profileBio').textContent = prof.bio || 'No bio provided';
+
+            // Profile Image
+            if (prof.profile_image) {
+                document.getElementById('profileImage').src = formatImagePath(prof.profile_image);
+            }
+
+            // Verified Badge
+            if (prof.is_verified) {
+                document.getElementById('verifiedBadge').style.display = 'inline-block';
+            }
+
+            // Statistics
+            document.getElementById('statExperience').textContent = prof.experience_years || 0;
+            document.getElementById('statProjects').textContent = prof.total_projects || 0;
+            document.getElementById('statReviews').textContent = prof.total_reviews || 0;
+            document.getElementById('statRating').innerHTML = `<i class="fas fa-star"></i> ${parseFloat(prof.rating || 0).toFixed(1)}`;
+
+            // Side panel
+            document.getElementById('sideExperience').textContent = `${prof.experience_years || 0} yrs`;
+            document.getElementById('sideRating').innerHTML = `<i class="fas fa-star"></i> ${parseFloat(prof.rating || 0).toFixed(1)} / 5`;
+
+            // Education
+            if (prof.education) {
+                const educationList = document.getElementById('educationList');
+                const educationItems = prof.education.split(',').map(e => e.trim()).filter(e => e);
+                if (educationItems.length > 0) {
+                    educationList.innerHTML = educationItems.map(e => `<li><i class="fas fa-check-circle text-success me-2"></i>${e}</li>`).join('');
+                }
+            }
+
+            // Awards
+            if (prof.awards) {
+                const awardsList = document.getElementById('awardsList');
+                const awardItems = prof.awards.split(',').map(a => a.trim()).filter(a => a);
+                if (awardItems.length > 0) {
+                    awardsList.innerHTML = awardItems.map(a => `<li><i class="fas fa-trophy text-warning me-2"></i>${a}</li>`).join('');
+                }
+            }
+
+            // Social Links
+            const socialContainer = document.getElementById('socialLinks');
+            let socialHTML = '';
+            if (prof.instagram) socialHTML += `<a href="${prof.instagram}" target="_blank" class="social-link"><i class="fab fa-instagram"></i></a>`;
+            if (prof.linkedin) socialHTML += `<a href="${prof.linkedin}" target="_blank" class="social-link"><i class="fab fa-linkedin-in"></i></a>`;
+            if (prof.twitter) socialHTML += `<a href="${prof.twitter}" target="_blank" class="social-link"><i class="fab fa-twitter"></i></a>`;
+            if (prof.website) socialHTML += `<a href="${prof.website}" target="_blank" class="social-link"><i class="fas fa-globe"></i></a>`;
+            socialContainer.innerHTML = socialHTML || '<p class="text-muted small">No social links</p>';
+
+            // Projects
+            if (projects && projects.length > 0) {
+                const projectsContainer = document.getElementById('projectsList');
+                projectsContainer.innerHTML = projects.slice(0, 6).map(p => `
+          <div class="col-md-4">
+            <div class="card project-card border-0 shadow-sm" onclick="window.location.href='/pages/projects/details.html?id=${p.id}'" style="cursor: pointer;">
+              <img src="${formatProjectImage(p.images ? p.images[0] : p.image)}" class="card-img-top" style="height: 150px; object-fit: cover;" onerror="this.src='/images/project-placeholder.jpg'">
+              <div class="card-body p-3">
+                <h6 class="mb-1">${p.title}</h6>
+                <small class="text-muted">${p.category} • ${p.year || ''}</small>
+              </div>
+            </div>
+          </div>
+        `).join('');
+            }
+
+            // Reviews
+            if (reviews && reviews.length > 0) {
+                const reviewsContainer = document.getElementById('reviewsList');
+                reviewsContainer.innerHTML = reviews.map(r => `
+          <div class="review-card">
+            <div class="d-flex justify-content-between mb-2">
+              <strong>${r.user_name || 'Anonymous'}</strong>
+              <span class="text-warning">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+            </div>
+            <p class="mb-1">${r.review_text || 'No comment'}</p>
+            <small class="text-muted">${new Date(r.created_at).toLocaleDateString()}</small>
+          </div>
+        `).join('');
+            }
+
+            // Update page title
+            document.title = `${prof.name} - Planora`;
+        }
+
+        function showError() {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('errorState').style.display = 'block';
+        }
+
+        function scheduleMeeting() {
+            if (!isAuthenticated()) {
+                sessionStorage.setItem('redirectAfterLogin', window.location.pathname + window.location.search);
+                window.location.href = '/pages/public/login.html';
+                return;
+            }
+            const modal = new bootstrap.Modal(document.getElementById('scheduleModal'));
+            modal.show();
+        }
+
+        document.getElementById('scheduleForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const bookingData = {
+                professional_id: professionalId,
+                booking_date: document.getElementById('meetingDate').value,
+                booking_time: document.getElementById('meetingTime').value,
+                message: document.getElementById('meetingMessage').value
+            };
+
+            try {
+                const response = await fetch('/api/bookings', {
+                    method: 'POST',
+                    headers: {
+                        ...getAuthHeader(),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(bookingData)
+                });
+
+                if (response.ok) {
+                    // Close booking modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('scheduleModal'));
+                    modal.hide();
+
+                    // Show beautiful success modal
+                    document.getElementById('successModalBody').innerHTML = `
+                        <div class="text-center py-4">
+                            <div class="mb-4">
+                                <i class="fas fa-check-circle" style="font-size: 4rem; color: #00bfa6;"></i>
+                            </div>
+                            <h4 class="mb-3" style="color: #14213d; font-weight: 700;">Booking Request Sent!</h4>
+                            <p style="color: #6c757d; font-size: 1.1rem;">
+                                The professional will review your request and contact you soon.
+                            </p>
+                            <p class="mt-3 mb-0" style="color: #8ed1fa; font-weight: 600;">
+                                <i class="fas fa-envelope me-2"></i>Check your email for confirmation
+                            </p>
+                        </div>
+                    `;
+                    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                    successModal.show();
+
+                    // Reset form
+                    document.getElementById('scheduleForm').reset();
+                } else {
+                    alert('❌ Failed to schedule meeting. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error scheduling meeting');
+            }
+        });
+    </script>
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow-lg">
+                <div class="modal-body p-0" id="successModalBody">
+                    <!-- Content will be inserted here -->
+                </div>
+                <div class="modal-footer border-0 justify-content-center pb-4">
+                    <button type="button" class="btn btn-primary px-5 rounded-3" data-bs-dismiss="modal">
+                        <i class="fas fa-check me-2"></i>Got it!
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
