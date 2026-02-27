@@ -57,18 +57,26 @@
 
 
   <script>
-    // Redirect if already logged in
-    if (isAuthenticated()) {
-      const userData = getUserData();
-      if (userData && (userData.role === 'professional' || userData.role === 'Professional')) {
-        window.location.href = '/pages/professional/dashboard.html';
-      } else {
-        window.location.href = '/pages/user/dashboard.html';
+    // Redirect if already logged in (delayed to prevent race conditions during manual login)
+    document.addEventListener('DOMContentLoaded', () => {
+      if (isAuthenticated()) {
+        // Double check we are not actively trying to log in
+        if (sessionStorage.getItem('isActivelyLoggingIn')) return;
+        
+        const userData = getUserData();
+        if (userData && (userData.role === 'professional' || userData.role === 'Professional')) {
+          window.location.href = '/pages/professional/dashboard.html';
+        } else {
+          window.location.href = '/pages/user/dashboard.html';
+        }
       }
-    }
+    });
 
     document.getElementById('loginForm').addEventListener('submit', async function (e) {
       e.preventDefault();
+      
+      // Lock the auto-redirect listener at the top of the file so it doesn't interrupt us
+      sessionStorage.setItem('isActivelyLoggingIn', 'true');
 
       const role = document.getElementById('role').value;
       const email = document.getElementById('email').value;
