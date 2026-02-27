@@ -2,16 +2,15 @@
 <html lang="en">
 
 <head>
-  <!-- Auth Protection -->
   <script src="/js/auth.js"></script>
   <script src="/js/navbar.js"></script>
   <script>
-    // Redirect to login if not authenticated
-    if (!isAuthenticated()) {
+    if (typeof isAuthenticated !== 'undefined' && !isAuthenticated()) {
       sessionStorage.setItem('redirectAfterLogin', window.location.pathname.split('/').pop());
       window.location.href = '/pages/public/login.html';
     }
   </script>
+
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Vastu Compliance Checker — Planora</title>
@@ -19,328 +18,351 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="icon" type="image/png" href="/icon/Planora-logo-removebg-preview.png">
+
   <style>
+    /* Scoped styles to prevent crashing other pages */
+    #vastu-app-wrapper {
+      --planora-dark: #14213d;
+      --planora-blue: #1e3c72;
+      --vastu-success: #00bfa6;
+      --vastu-warning: #f39c12;
+      --vastu-danger: #e74c3c;
+    }
+
     .vastu-container {
-      max-width: 980px;
+      max-width: 1100px;
       margin: 40px auto;
-      background: rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.4);
       padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border-radius: 24px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.4);
     }
 
-    .grid {
+    .mandala-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 18px;
-      margin-bottom: 24px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 18px;
+      border: 1px solid #eee;
     }
 
-    label {
-      display: block;
-      margin-bottom: 6px;
+    .grid-cell {
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #bdc3c7;
+      border: 1px solid #efefef;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      text-align: center;
+    }
+
+    .grid-cell.active-pos {
+      background: #e0fcf8;
+      border-color: var(--vastu-success);
+      color: var(--vastu-success);
+      transform: scale(1.03);
+      box-shadow: 0 5px 15px rgba(0, 191, 166, 0.15);
+    }
+
+    .grid-cell.active-neg {
+      background: #fff2f0;
+      border-color: var(--vastu-danger);
+      color: var(--vastu-danger);
+    }
+
+    .form-label {
       font-weight: 600;
-      color: #14213d;
+      color: var(--planora-dark);
+      font-size: 0.85rem;
+      margin-bottom: 5px;
+    }
+
+    .form-select {
+      border-radius: 12px;
+      padding: 10px;
+      border: 1px solid #ced4da;
       font-size: 0.9rem;
     }
 
-    select,
-    input {
-      width: 100%;
-      padding: 12px 15px;
-      border: 1px solid #ccc;
-      border-radius: 12px;
-      background-color: #fff;
-      font-size: 15px;
-      transition: 0.3s;
+    .form-select:focus {
+      border-color: var(--vastu-success);
+      box-shadow: 0 0 0 0.25 margin rgba(0, 191, 166, 0.25);
     }
 
-    select:focus,
-    input:focus {
-      outline: none;
-      border-color: #00bfa6;
-      box-shadow: 0 0 8px rgba(0, 191, 166, 0.3);
+    .score-display {
+      background: linear-gradient(135deg, #f1f4f9, #ffffff);
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      border: 1px solid #e1e8f0;
     }
 
-    .full {
-      grid-column: 1/-1;
-    }
-
-    button {
-      padding: 14px 28px;
-      background: linear-gradient(90deg, #1e3c72, #2a5298);
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 16px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      background: linear-gradient(90deg, #2a5298, #1e3c72);
-      box-shadow: 0 0 15px rgba(30, 60, 114, 0.3);
-      transform: translateY(-2px);
-    }
-
-    #result {
-      margin-top: 28px;
-      padding: 22px;
-      background: rgba(255, 255, 255, 0.5);
-      border-radius: 15px;
-      border-left: 4px solid #00bfa6;
-      color: #222;
-    }
-
-    .badge-vastu {
-      display: inline-block;
-      padding: 6px 12px;
-      border-radius: 10px;
-      background: linear-gradient(90deg, #1e3c72, #2a5298);
-      color: #fff;
-      font-weight: 600;
-    }
-
-    @media(max-width:720px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
+    .remedy-item {
+      border-left: 4px solid var(--vastu-warning);
+      background: #fffcf0;
+      padding: 15px;
+      margin-bottom: 12px;
+      border-radius: 0 12px 12px 0;
+      font-size: 0.88rem;
+      color: #5d4037;
     }
   </style>
 </head>
 
-<body>
-  <!-- Navbar -->
+<body id="vastu-app-wrapper">
   <div id="planora-navbar"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="/js/auth.js"></script>
-  <script src="/js/navbar.js"></script>
-
-  <!-- Hero Header Section -->
-  <header style="
-    background: linear-gradient(135deg, #181952, #190f39);
-    padding: 40px 20px;
-    text-align: center;
-    color: white;
-    border-bottom: 4px solid #8ed1fa;
-    position: relative;
-    overflow: hidden;
-  ">
-    <div
-      style="position:absolute;width:150px;height:150px;background:rgba(255,180,0,0.15);border-radius:50%;top:-40px;left:-40px;filter:blur(30px);">
-    </div>
-    <div
-      style="position:absolute;width:180px;height:180px;background:rgba(142,209,250,0.12);border-radius:50%;bottom:-50px;right:-50px;filter:blur(30px);">
-    </div>
-
-    <h1
-      style="font-size: 2.5rem;font-weight: 900;letter-spacing: 2px;margin: 0 0 15px;text-shadow: 2px 2px 8px rgba(0,0,0,0.3);position: relative;z-index: 2;">
-      VASTU COMPLIANCE CHECKER
-    </h1>
-    <p style="font-size: 1.1rem;margin: 0;opacity: 0.9;font-weight: 400;position: relative;z-index: 2;">
-      Check Your Plot → Get Recommendations → Ensure Harmony
-    </p>
+  <header
+    style="background: linear-gradient(135deg, #181952, #190f39); padding: 60px 20px; text-align: center; color: white; border-bottom: 4px solid #8ed1fa;">
+    <h1 style="font-weight: 900; letter-spacing: 2px; text-transform: uppercase;">VASTU COMPLIANCE CHECKER</h1>
+    <p style="font-size: 1.1rem; opacity: 0.9;">Check Your Plot → Get Recommendations → Ensure Harmony</p>
   </header>
- 
 
-  <!-- Main Content -->
-  <div class="container" style="padding-top: 30px; padding-bottom: 50px;">
+  <div class="container py-5">
     <div class="vastu-container">
-      <div class="grid">
-        <div>
-          <label for="facing">Plot Facing Direction</label>
-          <select id="facing">
-            <option value="north">North</option>
-            <option value="south">South</option>
-            <option value="east">East</option>
-            <option value="west">West</option>
-            <option value="northeast">North-East</option>
-            <option value="northwest">North-West</option>
-            <option value="southeast">South-East</option>
-            <option value="southwest">South-West</option>
-          </select>
+      <div class="row g-5">
+        <div class="col-lg-7">
+          <h5 class="mb-4 d-flex align-items-center"><i class="fas fa-home me-2" style="color:var(--planora-blue)"></i>
+            Property Blueprint Details</h5>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Plot Facing Direction</label>
+              <select id="facing" class="form-select">
+                <option value="north">North</option>
+                <option value="east">East</option>
+                <option value="west">West</option>
+                <option value="south">South</option>
+                <option value="northeast">North-East</option>
+                <option value="southeast">South-East</option>
+                <option value="southwest">South-West</option>
+                <option value="northwest">North-West</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Plot Shape</label>
+              <select id="shape" class="form-select">
+                <option value="square">Square</option>
+                <option value="rectangle">Rectangle</option>
+                <option value="irregular">Irregular</option>
+                <option value="lshaped">L-Shaped</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Main Door Direction</label>
+              <select id="mainDoor" class="form-select">
+                <option value="north">North</option>
+                <option value="east">East</option>
+                <option value="northeast">North-East</option>
+                <option value="northwest">North-West</option>
+                <option value="southeast">South-East</option>
+                <option value="southwest">South-West</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Kitchen Location</label>
+              <select id="kitchen" class="form-select">
+                <option value="southeast">South-East (Agni)</option>
+                <option value="northwest">North-West</option>
+                <option value="northeast">North-East</option>
+                <option value="southwest">South-West</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Living Room Location</label>
+              <select id="living" class="form-select">
+                <option value="east">East</option>
+                <option value="north">North</option>
+                <option value="northeast">North-East</option>
+                <option value="northwest">North-West</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Bathroom/Toilet</label>
+              <select id="toilet" class="form-select">
+                <option value="northwest">North-West</option>
+                <option value="south">South</option>
+                <option value="west">West</option>
+                <option value="northeast">North-East (Avoid)</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Staircase Type</label>
+              <select id="staircase" class="form-select">
+                <option value="clockwise">Clockwise (Auspicious)</option>
+                <option value="anticlockwise">Anti-Clockwise</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Water Storage (Overhead)</label>
+              <select id="water" class="form-select">
+                <option value="southwest">South-West</option>
+                <option value="west">West</option>
+                <option value="northeast">North-East</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Master Bedroom</label>
+              <select id="bedroom" class="form-select">
+                <option value="southwest">South-West (Earth)</option>
+                <option value="north">North</option>
+                <option value="east">East</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Pooja Room Location</label>
+              <select id="pooja" class="form-select">
+                <option value="northeast">North-East</option>
+                <option value="east">East</option>
+                <option value="north">North</option>
+              </select>
+            </div>
+
+            <div class="col-12 mt-4">
+              <button onclick="checkVastuCompliance()" class="btn btn-primary w-100 p-3 shadow-sm"
+                style="background: linear-gradient(90deg, #1e3c72, #2a5298); border:none; border-radius:12px; font-weight:700;">
+                <i class="fas fa-check-circle me-2"></i>CHECK VASTU COMPLIANCE
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div>
-          <label for="shape">Plot Shape</label>
-          <select id="shape">
-            <option value="square">Square</option>
-            <option value="rectangle">Rectangle</option>
-            <option value="irregular">Irregular</option>
-            <option value="lshaped">L-Shaped</option>
-          </select>
-        </div>
+        <div class="col-lg-5">
+          <div class="text-center mb-4">
+            <h6 class="text-uppercase tracking-wider fw-bold text-muted mb-3" style="font-size: 0.7rem;">Vastu Purusha
+              Mandala Grid</h6>
+            <div class="mandala-grid" id="mandala-display">
+              <div class="grid-cell" id="cell-northwest">NW<br>Air</div>
+              <div class="grid-cell" id="cell-north">N<br>Water</div>
+              <div class="grid-cell" id="cell-northeast">NE<br>Ishanya</div>
+              <div class="grid-cell" id="cell-west">W<br>Space</div>
+              <div class="grid-cell" style="color:var(--planora-blue); border:2px dashed #d1d9e6">Center<br>Brahma</div>
+              <div class="grid-cell" id="cell-east">E<br>Sun</div>
+              <div class="grid-cell" id="cell-southwest">SW<br>Earth</div>
+              <div class="grid-cell" id="cell-south">S<br>Yama</div>
+              <div class="grid-cell" id="cell-southeast">SE<br>Fire</div>
+            </div>
+          </div>
 
-        <div>
-          <label for="mainDoor">Main Door Direction</label>
-          <select id="mainDoor">
-            <option value="north">North</option>
-            <option value="south">South</option>
-            <option value="east">East</option>
-            <option value="west">West</option>
-            <option value="northeast">North-East</option>
-            <option value="northwest">North-West</option>
-            <option value="southeast">South-East</option>
-            <option value="southwest">South-West</option>
-          </select>
-        </div>
+          <div id="resultBox" style="display:none;">
+            <div class="score-display mb-4">
+              <h2 class="fw-900 mb-0" id="finalScore">0%</h2>
+              <span class="text-muted small">Scientific Compliance Score</span>
+              <div class="progress mt-3" style="height: 8px; border-radius: 10px;">
+                <div id="scoreBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar">
+                </div>
+              </div>
+            </div>
 
-        <div>
-          <label for="kitchen">Kitchen Location</label>
-          <select id="kitchen">
-            <option value="southeast">South-East</option>
-            <option value="northwest">North-West</option>
-            <option value="east">East</option>
-            <option value="south">South</option>
-            <option value="north">North</option>
-            <option value="west">West</option>
-          </select>
+            <h6 class="fw-bold text-danger mb-3"><i class="fas fa-tools me-2"></i>Required Remedies</h6>
+            <div id="remedyList"></div>
+          </div>
         </div>
-
-        <div>
-          <label for="bedroom">Master Bedroom Location</label>
-          <select id="bedroom">
-            <option value="southwest">South-West</option>
-            <option value="south">South</option>
-            <option value="west">West</option>
-            <option value="northwest">North-West</option>
-            <option value="east">East</option>
-            <option value="north">North</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="pooja">Pooja Room Location</label>
-          <select id="pooja">
-            <option value="northeast">North-East</option>
-            <option value="east">East</option>
-            <option value="north">North</option>
-            <option value="west">West</option>
-          </select>
-        </div>
-
-        <div class="full">
-          <button onclick="checkVastu()" style="width:100%;">
-            <i class="fas fa-check-circle me-2"></i>Check Vastu Compliance
-          </button>
-        </div>
-      </div>
-
-      <div id="result" style="display:none;">
-        <h4><i class="fas fa-clipboard-check me-2" style="color: #00bfa6;"></i>Vastu Analysis Result</h4>
-        <div id="resultContent"></div>
       </div>
     </div>
   </div>
 
-  <!-- Dynamic Footer -->
   <div id="planora-footer"></div>
-  <script src="/js/footer.js"></script>
 
   <script>
-    function checkVastu() {
-      const facing = document.getElementById('facing').value;
-      const shape = document.getElementById('shape').value;
-      const mainDoor = document.getElementById('mainDoor').value;
-      const kitchen = document.getElementById('kitchen').value;
-      const bedroom = document.getElementById('bedroom').value;
-      const pooja = document.getElementById('pooja').value;
+    // Professional Rule Engine
+    const RULES = {
+      facing: {
+        north: 10, east: 10, northeast: 10, northwest: 7,
+        southeast: 5, west: 5, south: 2, southwest: 0
+      },
+      shape: { square: 10, rectangle: 10, irregular: 2, lshaped: 4 },
+      mainDoor: {
+        north: { s: 10, c: 'north' }, east: { s: 10, c: 'east' }, northeast: { s: 10, c: 'northeast' },
+        northwest: { s: 7, c: 'northwest' }, southeast: { s: 4, c: 'southeast' }, southwest: { s: -10, c: 'southwest', r: 'Main door in SW is a major leak. Fix a Vastu copper strip on the threshold.' }
+      },
+      kitchen: {
+        southeast: { s: 10, c: 'southeast' }, northwest: { s: 8, c: 'northwest' },
+        northeast: { s: -10, c: 'northeast', r: 'Kitchen in NE causes health issues. Place a yellow marble slab under the stove.' },
+        southwest: { s: -5, c: 'southwest', r: 'Kitchen in SW affects wealth. Use a Ganesha idol facing the kitchen.' }
+      },
+      living: { east: 10, north: 10, northeast: 10, northwest: 8 },
+      toilet: {
+        northwest: { s: 10, c: 'northwest' }, west: { s: 8, c: 'west' }, south: { s: 7, c: 'south' },
+        northeast: { s: -15, c: 'northeast', r: 'Toilet in NE is highly critical. Keep a bowl of sea salt inside and keep the door closed always.' }
+      },
+      staircase: { clockwise: 10, anticlockwise: 3 },
+      water: {
+        southwest: { s: 10, c: 'southwest' }, west: { s: 8, c: 'west' },
+        northeast: { s: -10, c: 'northeast', r: 'Overhead tank in NE creates heavy pressure. Move it to SW or West corner.' }
+      },
+      bedroom: { southwest: { s: 10, c: 'southwest' }, north: 5, east: 5 },
+      pooja: { northeast: { s: 10, c: 'northeast' }, east: 8, north: 8 }
+    };
 
-      let score = 100;
-      let recommendations = [];
-      let positives = [];
+    function checkVastuCompliance() {
+      // Collecting all parameters
+      const vals = {
+        facing: document.getElementById('facing').value,
+        shape: document.getElementById('shape').value,
+        mainDoor: document.getElementById('mainDoor').value,
+        kitchen: document.getElementById('kitchen').value,
+        living: document.getElementById('living').value,
+        toilet: document.getElementById('toilet').value,
+        staircase: document.getElementById('staircase').value,
+        water: document.getElementById('water').value,
+        bedroom: document.getElementById('bedroom').value,
+        pooja: document.getElementById('pooja').value
+      };
 
-      // Plot Facing Analysis
-      if (['north', 'east', 'northeast'].includes(facing)) {
-        positives.push('✅ Plot facing direction is auspicious');
-      } else if (facing === 'southwest') {
-        score -= 15;
-        recommendations.push('⚠️ South-West facing plot may bring challenges. Consider placing heavy objects in SW corner.');
+      let score = 0;
+      let totalPossible = 100;
+      let remedies = [];
+
+      // Reset Grid Visuals
+      document.querySelectorAll('.grid-cell').forEach(el => el.classList.remove('active-pos', 'active-neg'));
+
+      // Process Each Parameter
+      for (let key in vals) {
+        const selection = vals[key];
+        const rule = RULES[key][selection];
+
+        if (typeof rule === 'number') {
+          score += rule;
+        } else if (rule && typeof rule === 'object') {
+          score += rule.s;
+          if (rule.c) {
+            const cell = document.getElementById(`cell-${rule.c}`);
+            if (cell) cell.classList.add(rule.s >= 0 ? 'active-pos' : 'active-neg');
+          }
+          if (rule.r) remedies.push(rule.r);
+        }
       }
 
-      // Shape Analysis
-      if (shape === 'square' || shape === 'rectangle') {
-        positives.push('✅ Plot shape is ideal for Vastu');
-      } else {
-        score -= 10;
-        recommendations.push('⚠️ Irregular/L-shaped plots can be balanced with proper landscaping and construction.');
-      }
+      // Normalize Score to 100
+      const finalPercent = Math.max(0, Math.min(100, score));
 
-      // Main Door Analysis
-      if (['north', 'east', 'northeast'].includes(mainDoor)) {
-        positives.push('✅ Main door direction is excellent');
-      } else if (mainDoor === 'southwest') {
-        score -= 20;
-        recommendations.push('⚠️ South-West entrance is not ideal. Consider adding a protective screen or placing a Vastu pyramid.');
-      }
+      // UI Render
+      document.getElementById('resultBox').style.display = 'block';
+      document.getElementById('finalScore').innerText = finalPercent + "%";
 
-      // Kitchen Analysis
-      if (kitchen === 'southeast') {
-        positives.push('✅ Kitchen in South-East (Agni corner) is perfect');
-      } else if (kitchen === 'northwest') {
-        positives.push('✅ Kitchen in North-West is acceptable');
-      } else {
-        score -= 10;
-        recommendations.push('⚠️ Ideal kitchen placement is South-East. Ensure stove faces East while cooking.');
-      }
+      const bar = document.getElementById('scoreBar');
+      bar.style.width = finalPercent + "%";
+      bar.className = 'progress-bar ' + (finalPercent > 75 ? 'bg-success' : finalPercent > 45 ? 'bg-warning' : 'bg-danger');
 
-      // Bedroom Analysis
-      if (['southwest', 'south', 'west'].includes(bedroom)) {
-        positives.push('✅ Master bedroom placement is correct');
-      } else {
-        score -= 10;
-        recommendations.push('⚠️ Master bedroom should be in South-West for stability and prosperity.');
-      }
+      document.getElementById('remedyList').innerHTML = remedies.length > 0
+        ? remedies.map(r => `<div class="remedy-item"><i class="fas fa-exclamation-triangle me-2 text-warning"></i>${r}</div>`).join('')
+        : '<div class="alert alert-success py-2" style="font-size:0.8rem">✅ No critical Doshas found in your plan!</div>';
 
-      // Pooja Room Analysis
-      if (['northeast', 'east', 'north'].includes(pooja)) {
-        positives.push('✅ Pooja room in auspicious direction');
-      } else {
-        score -= 10;
-        recommendations.push('⚠️ Pooja room should ideally be in North-East corner.');
-      }
-
-      // Generate Result
-      let resultHTML = `
-        <div class="mb-3">
-          <span class="badge-vastu" style="font-size: 1.2rem;">
-            Vastu Score: ${score}/100
-          </span>
-        </div>
-      `;
-
-      if (positives.length > 0) {
-        resultHTML += '<h5 style="color: #00bfa6; margin-top: 20px;">Positive Aspects</h5><ul style="list-style: none; padding-left: 0;">';
-        positives.forEach(p => resultHTML += `<li style="margin-bottom: 8px;">${p}</li>`);
-        resultHTML += '</ul>';
-      }
-
-      if (recommendations.length > 0) {
-        resultHTML += '<h5 style="color: #ff6b6b; margin-top: 20px;">Recommendations</h5><ul style="list-style: none; padding-left: 0;">';
-        recommendations.forEach(r => resultHTML += `<li style="margin-bottom: 8px;">${r}</li>`);
-        resultHTML += '</ul>';
-      }
-
-      if (score >= 80) {
-        resultHTML += '<div class="alert alert-success mt-3"><i class="fas fa-check-circle me-2"></i>Your property has excellent Vastu compliance!</div>';
-      } else if (score >= 60) {
-        resultHTML += '<div class="alert alert-warning mt-3"><i class="fas fa-exclamation-triangle me-2"></i>Your property has moderate Vastu compliance. Consider the recommendations above.</div>';
-      } else {
-        resultHTML += '<div class="alert alert-danger mt-3"><i class="fas fa-times-circle me-2"></i>Your property needs significant Vastu corrections. Consult a Vastu expert.</div>';
-      }
-
-      document.getElementById('result').style.display = 'block';
-      document.getElementById('resultContent').innerHTML = resultHTML;
-      document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+      window.scrollTo({ top: document.getElementById('resultBox').offsetTop - 50, behavior: 'smooth' });
     }
   </script>
 </body>
 
-
 </html>
-
-
