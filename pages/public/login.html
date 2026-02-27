@@ -80,7 +80,8 @@
       }
 
       try {
-        const response = await fetch('/api/login', {
+        const baseUrl = (typeof API_BASE_URL !== 'undefined') ? API_BASE_URL : '';
+        const response = await fetch(`${baseUrl}/api/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password, role })
