@@ -195,7 +195,10 @@ async function handleSendChatMessage() {
             headers['Authorization'] = `Bearer ${localStorage.getItem('planora_token')}`;
         }
 
-        const response = await fetch('/api/chat', {
+        // Ensure API_BASE_URL is available, fallback if not
+        const baseUrl = (typeof API_BASE_URL !== 'undefined') ? API_BASE_URL : '';
+
+        const response = await fetch(`${baseUrl}/api/chat`, {
             method: 'POST',
             headers: headers,
             body: JSON.stringify({ message: text, history: aiChatHistory })
