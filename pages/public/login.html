@@ -106,9 +106,6 @@
           // Show success modal instead of alert
           showSuccessModal('Login Successful!', 'Redirecting to your dashboard...');
 
-          // DEBUGGING VERCEL: Force the browser to show us exactly what Vercel responded with
-          alert(`DEBUG SERVER RESPONSE: Auth Role = ${result.user?.role} | Token Generated = ${!!result.token}`);
-
           // Redirect after 1.5 seconds
           setTimeout(() => {
             const redirectTo = sessionStorage.getItem('redirectAfterLogin');
@@ -127,11 +124,16 @@
             }
           }, 1500);
         } else {
-          showErrorModal('Login Failed', result.error || 'Invalid credentials. Please try again.');
+          // Clear password field so they can try again quickly
+          document.getElementById('password').value = '';
+          sessionStorage.removeItem('isActivelyLoggingIn');
+          showErrorModal('Login Failed', result.error || result.message || 'Invalid credentials. Please try again.');
         }
       } catch (error) {
         console.error('Login error:', error);
+        sessionStorage.removeItem('isActivelyLoggingIn');
         showErrorModal('Connection Error', 'Unable to connect to server. Please try again.');
+        document.getElementById('password').value = '';
       }
     });
 
