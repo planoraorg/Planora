@@ -141,6 +141,7 @@
         const result = await response.json();
         if (response.ok) {
           // Auto-login with token for both users and professionals
+          if (result.token) {
             saveAuthToken(result.token);
             showSuccessModal('Registration Successful!', 'Welcome to Planora! Redirecting to your dashboard...');
 
