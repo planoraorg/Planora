@@ -98,6 +98,8 @@
     // Handle form submission
     document.getElementById('registerForm').addEventListener('submit', async function (e) {
       e.preventDefault();
+      
+      sessionStorage.setItem('isActivelyRegistering', 'true');
 
       const role = document.getElementById('role').value;
       const name = document.getElementById('name').value;
