@@ -9,6 +9,7 @@ import { fileURLToPath } from "url";
 import fs from "fs";
 import fetch from "node-fetch";
 import jwt from "jsonwebtoken";
+import Groq from "groq-sdk";
 
 // Load environment variables
 dotenv.config();
@@ -861,15 +862,16 @@ app.get("/api/bookings/professional", authenticateToken, async (req, res) => {
 // AI CHATBOT API (GROQ)
 // ===========================
 
-let groq;
-(async () => {
-  try {
-    const { default: Groq } = await import("groq-sdk");
+let groq = null;
+try {
+  if (process.env.GROQ_API_KEY) {
     groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-  } catch (e) {
-    console.warn("⚠️ Groq SDK Initialization warning: Make sure GROQ_API_KEY is defined in .env and installed.");
+  } else {
+    console.warn("⚠️ GROQ_API_KEY is not defined in environment variables. Planora AI will not work.");
   }
-})();
+} catch (e) {
+  console.error("⚠️ Failed to initialize Groq SDK natively:", e);
+}
 
 app.post("/api/chat", async (req, res) => {
   try {
