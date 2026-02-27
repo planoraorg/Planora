@@ -60,7 +60,7 @@
     // Redirect if already logged in
     if (isAuthenticated()) {
       const userData = getUserData();
-      if (userData && userData.role === 'professional') {
+      if (userData && (userData.role === 'professional' || userData.role === 'Professional')) {
         window.location.href = '/pages/professional/dashboard.html';
       } else {
         window.location.href = '/pages/user/dashboard.html';
@@ -90,16 +90,21 @@
         const result = await response.json();
 
         if (response.ok) {
+          // Pre-emptively clear any old lingering tokens/state
+          localStorage.removeItem('planora_token');
           // Save JWT token
           saveAuthToken(result.token);
 
           // Show success modal instead of alert
           showSuccessModal('Login Successful!', 'Redirecting to your dashboard...');
 
+          // DEBUGGING VERCEL: Force the browser to show us exactly what Vercel responded with
+          alert(`DEBUG SERVER RESPONSE: Auth Role = ${result.user?.role} | Token Generated = ${!!result.token}`);
+
           // Redirect after 1.5 seconds
           setTimeout(() => {
             const redirectTo = sessionStorage.getItem('redirectAfterLogin');
-            const verifiedRole = result.user?.role || role; // Rely on server's assigned role
+            const verifiedRole = result.user ? result.user.role : role; // Rely strictly on server's assigned role
 
             // Prevent redirectAfterLogin from forcing a professional into the user dashboard accidentally
             if (redirectTo && !redirectTo.includes('dashboard.html')) {
