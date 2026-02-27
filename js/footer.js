@@ -226,8 +226,8 @@ async function handleSendChatMessage() {
         }
 
     } catch (error) {
-        appendUIChatMessage("⚠️ Connectivity error. Please check server and API keys.", 'ai');
-        console.error("Chat Error: ", error);
+        appendUIChatMessage(`⚠️ Server Error: ${error.message || 'Unknown network error occurred.'}`, 'ai');
+        console.error("Chat Error Detail: ", error);
     } finally {
         inputField.disabled = false;
         sendBtn.disabled = false;
