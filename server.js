@@ -236,9 +236,18 @@ app.post("/api/professional-register", upload.single("degree"), async (req, res)
 
     const docRef = await prosRef.add(newPro);
 
+    // Generate token for auto-login
+    const token = jwt.sign(
+      { id: docRef.id, email, name, role: "professional" },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
     res.json({
       message: "✅ Professional registered (Pending admin verification)",
       professionalId: docRef.id,
+      token,
+      user: { id: docRef.id, name, email, role: "professional" }
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -773,6 +782,37 @@ app.get("/api/bookings", authenticateToken, async (req, res) => {
     }));
 
     res.json(bookings);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update Booking Status
+app.put("/api/bookings/:id/status", authenticateToken, async (req, res) => {
+  try {
+    const bookingId = req.params.id;
+    const { status } = req.body; // 'confirmed' or 'cancelled'
+    const professionalId = req.user.id; // ensure only the professional can update
+
+    // Verify booking belongs to this professional
+    const bookingDoc = await db.collection("bookings").doc(bookingId).get();
+    if (!bookingDoc.exists) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    if (bookingDoc.data().professional_id !== professionalId) {
+      return res.status(403).json({ message: "Unauthorized to update this booking" });
+    }
+
+    if (status === 'cancelled') {
+      // Delete the booking entirely if declined by professional
+      await db.collection("bookings").doc(bookingId).delete();
+      res.json({ message: "Booking has been declined and removed." });
+    } else {
+      // Update status if confirmed
+      await db.collection("bookings").doc(bookingId).update({ status });
+      res.json({ message: `Booking status updated to ${status}` });
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
