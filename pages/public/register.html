@@ -139,12 +139,15 @@
         const result = await response.json();
         if (response.ok) {
           // Auto-login with token for both users and professionals
-          if (result.token) {
             saveAuthToken(result.token);
             showSuccessModal('Registration Successful!', 'Welcome to Planora! Redirecting to your dashboard...');
 
+            // DEBUGGING: What exactly is Vercel sending back for the role?
+            alert(`DEBUG: Server responded with role: ${result.user?.role} | Token exists: ${!!result.token}`);
+
             setTimeout(() => {
-              if (role === 'user') {
+              const verifiedRole = result.user ? result.user.role : role;
+              if (verifiedRole === 'user') {
                 window.location.href = '/pages/user/dashboard.html';
               } else {
                 window.location.href = '/pages/professional/dashboard.html';
