@@ -99,11 +99,14 @@
           // Redirect after 1.5 seconds
           setTimeout(() => {
             const redirectTo = sessionStorage.getItem('redirectAfterLogin');
-            if (redirectTo) {
+            const verifiedRole = result.user?.role || role; // Rely on server's assigned role
+
+            // Prevent redirectAfterLogin from forcing a professional into the user dashboard accidentally
+            if (redirectTo && !redirectTo.includes('dashboard.html')) {
               sessionStorage.removeItem('redirectAfterLogin');
               window.location.href = redirectTo;
             } else {
-              if (role === 'professional') {
+              if (verifiedRole === 'professional') {
                 window.location.href = '/pages/professional/dashboard.html';
               } else {
                 window.location.href = '/pages/user/dashboard.html';
