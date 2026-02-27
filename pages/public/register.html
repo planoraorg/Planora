@@ -145,9 +145,6 @@
             saveAuthToken(result.token);
             showSuccessModal('Registration Successful!', 'Welcome to Planora! Redirecting to your dashboard...');
 
-            // DEBUGGING: What exactly is Vercel sending back for the role?
-            alert(`DEBUG: Server responded with role: ${result.user?.role} | Token exists: ${!!result.token}`);
-
             setTimeout(() => {
               const verifiedRole = result.user ? result.user.role : role;
               if (verifiedRole === 'user') {
@@ -163,11 +160,15 @@
             }, 1500);
           }
         } else {
+          sessionStorage.removeItem('isActivelyRegistering');
+          document.getElementById('password').value = '';
           showErrorModal('Registration Failed', result.error || result.message || 'Please try again.');
         }
 
       } catch (err) {
         console.error(err);
+        sessionStorage.removeItem('isActivelyRegistering');
+        document.getElementById('password').value = '';
         showErrorModal('Connection Error', 'Unable to connect to server. Please try again later.');
       }
     });
