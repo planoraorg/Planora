@@ -27,15 +27,24 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // CRITICAL: Explicit routes for Vercel serverless deployment
-app.use('/css', express.static(path.join(__dirname, 'css')));
-app.use('/js', express.static(path.join(__dirname, 'js')));
+const noCacheSettings = {
+  maxAge: 0,
+  setHeaders: (res) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+  }
+};
+
+app.use('/css', express.static(path.join(__dirname, 'css'), noCacheSettings));
+app.use('/js', express.static(path.join(__dirname, 'js'), noCacheSettings));
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/fonts', express.static(path.join(__dirname, 'fonts')));
 app.use('/icon', express.static(path.join(__dirname, 'icon')));
-app.use('/pages', express.static(path.join(__dirname, 'pages')));
+app.use('/pages', express.static(path.join(__dirname, 'pages'), noCacheSettings));
 
 // General static files (fallback)
-app.use(express.static(__dirname));
+app.use(express.static(__dirname, noCacheSettings));
 
 // ===========================
 // ROOT ROUTE
@@ -689,45 +698,7 @@ app.post("/api/generate-design", upload.single("image"), async (req, res) => {
   }
 });
 
-// ===========================
-// CHAT API
-// ===========================
-app.post("/api/chat", authenticateToken, async (req, res) => {
-  try {
-    const { message, context_type } = req.body;
-    const userId = req.user.id;
-    // Simple response placeholder
-    const response = "I'm a simple AI for now. I'll get smarter soon!";
 
-    // In production, integrate OpenAI here
-
-    const newChat = {
-      user_id: userId,
-      message,
-      response,
-      context_type,
-      created_at: admin.firestore.FieldValue.serverTimestamp(),
-    };
-
-    const docRef = await db.collection("chat_messages").add(newChat);
-    res.json({ message: "Chat saved", response, messageId: docRef.id });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.get("/api/chat", authenticateToken, async (req, res) => {
-  try {
-    const snapshot = await db.collection("chat_messages")
-      .where("user_id", "==", req.user.id)
-      .orderBy("created_at", "asc")
-      .limit(50)
-      .get();
-    res.json(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
 
 // ===========================
 // BOOKINGS API
@@ -883,6 +854,98 @@ app.get("/api/bookings/professional", authenticateToken, async (req, res) => {
     res.json(bookings);
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+// ===========================
+// AI CHATBOT API (GROQ)
+// ===========================
+
+let groq;
+(async () => {
+  try {
+    const { default: Groq } = await import("groq-sdk");
+    groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+  } catch (e) {
+    console.warn("⚠️ Groq SDK Initialization warning: Make sure GROQ_API_KEY is defined in .env and installed.");
+  }
+})();
+
+app.post("/api/chat", async (req, res) => {
+  try {
+    if (!groq) {
+      return res.status(500).json({ error: "Groq API is not configured properly on the server." });
+    }
+
+    const { message, history } = req.body;
+
+    // Construct system prompt determining Planora's structure and capabilities.
+    const systemPrompt = `
+      You are P-Link Ai, a highly intelligent and friendly customer support assistant for the Planora home improvement platform. 
+      Your job is to provide a complete, conversational experience for both homeowners and professionals.
+
+      If a homeowner wants to hire someone (e.g. "I need an architect"):
+      - Do NOT just redirect them. First, kindly ask for details like their city, budget, or specific project requirements to help them better.
+      - Have a natural conversation. 
+      
+      If a professional asks a question or has doubts (e.g. "How do I update my profile?" or "Where are my bookings?"):
+      - Explain the process clearly.
+      - Let them know they can do these things in their Professional Dashboard.
+      
+      You also have deep knowledge of our features:
+      - Cost Calculator / Estimate Tool: helps estimate project expenses.
+      - Vastu Calculator: helps check Vastu compliance.
+      - AI Design Generator: generates interior designs.
+      - Project Gallery: for finding inspirations.
+
+      CRITICAL INSTRUCTION: You MUST return a JSON object containing exactly two keys:
+      1. "message": Your conversational response to the user. Be helpful, clear, and engaging.
+      2. "redirect_url": The exact URL to route them to ONLY IF they explicitly ask to go to a page or if the conversation has naturally reached the point where they are ready to use a tool or browse professionals. If no redirect is needed right now, return null.
+
+      Here are the valid routes you can redirect to if needed:
+      - Professionals Browse (e.g., Architect, Plumber, etc.): /pages/professional/browse.html?specialization=encoded_specialization
+      - User/Pro Dashboard: /pages/user/dashboard.html OR /pages/professional/dashboard.html
+      - Cost Calculator: /pages/tools/cost-calculator.html
+      - Vastu Calculator: /pages/tools/vastu-calculator.html
+      - AI Design Generator: /pages/tools/ai-design-generator.html
+      - Login/Register: /pages/public/login.html OR /pages/public/register.html
+      - Contact Us: /pages/public/contact.html
+
+      Example 1 (Starting conversational flow):
+      User: "I need an architect."
+      JSON: {"message": "I can definitely help you find a great architect! To make sure I point you in the right direction, could you let me know which city you're in and what your rough budget is?", "redirect_url": null}
+
+      Example 2 (User answers follow-up):
+      User: "I'm in Delhi and my budget is around 5 lakhs."
+      JSON: {"message": "Perfect! We have several top-rated architects in Delhi within that budget. Let me take you to our professionals page where you can browse and apply filters!", "redirect_url": "/pages/professional/browse.html?specialization=Architect"}
+
+      Example 3 (Professional asks for help):
+      User: "How do I check my messages?"
+      JSON: {"message": "You can check all your client messages, bookings, and reviews directly from your Professional Dashboard! Would you like me to take you there?", "redirect_url": null}
+
+      Respond strictly with valid JSON.
+    `;
+
+    const chatContext = [
+      { role: "system", content: systemPrompt },
+      ...(history || []),
+      { role: "user", content: message }
+    ];
+
+    const chatCompletion = await groq.chat.completions.create({
+      messages: chatContext,
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.2,
+      response_format: { type: "json_object" }
+    });
+
+    const botResponseRaw = chatCompletion.choices[0]?.message?.content || "{}";
+    const botResponseJSON = JSON.parse(botResponseRaw);
+
+    res.json(botResponseJSON);
+  } catch (error) {
+    console.error("Groq Chat Error:", error);
+    res.status(500).json({ error: "Failed to generate AI response. Please check API Key limits or connection." });
   }
 });
 
