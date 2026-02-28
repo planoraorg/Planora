@@ -730,7 +730,6 @@ app.get("/api/bookings", authenticateToken, async (req, res) => {
   try {
     const snapshot = await db.collection("bookings")
       .where("user_id", "==", req.user.id)
-      .orderBy("created_at", "desc")
       .get();
 
     const bookings = await Promise.all(snapshot.docs.map(async (doc) => {
@@ -752,6 +751,13 @@ app.get("/api/bookings", authenticateToken, async (req, res) => {
         specialization: proSpec
       };
     }));
+
+    // Sort by created_at descending in JS to avoid Firestore missing index errors
+    bookings.sort((a, b) => {
+      const aTime = a.created_at ? a.created_at.toMillis() : 0;
+      const bTime = b.created_at ? b.created_at.toMillis() : 0;
+      return bTime - aTime;
+    });
 
     res.json(bookings);
   } catch (error) {
