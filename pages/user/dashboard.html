@@ -239,9 +239,10 @@
     async function loadDashboardData() {
       try {
         const headers = getAuthHeader();
+        const baseUrl = (typeof API_BASE_URL !== 'undefined') ? API_BASE_URL : '';
 
         // 1. Fetch Bookings
-        const bookingsRes = await fetch('/api/bookings', { headers });
+        const bookingsRes = await fetch(`${baseUrl}/api/bookings`, { headers });
         if (bookingsRes.ok) {
           const bookings = await bookingsRes.json();
           document.getElementById('bookingCount').textContent = bookings.length;
@@ -281,10 +282,14 @@
         }
 
         // 2. Fetch Cost Estimates
-        const estimatesRes = await fetch('/api/cost-estimates', { headers });
-        if (estimatesRes.ok) {
-          const estimates = await estimatesRes.json();
-          document.getElementById('estimateCount').textContent = estimates.length;
+        try {
+          const estimatesRes = await fetch(`${baseUrl}/api/cost-estimates`, { headers });
+          if (estimatesRes.ok) {
+            const estimates = await estimatesRes.json();
+            document.getElementById('estimateCount').textContent = estimates.length;
+          }
+        } catch (e) {
+          console.warn('Cost estimates endpoint not available yet', e);
         }
 
         // 3. Fetch My Projects (assuming we filter client side or have an endpoint)
