@@ -184,6 +184,34 @@
         </div>
       </div>
 
+      <!-- My Bookings Table (User Side) -->
+      <h4 class="mb-3 mt-5 border-bottom pb-2" style="color: #14213d; font-weight: 700;">
+        <i class="fas fa-calendar-check me-2 text-primary"></i>My Booking Requests
+      </h4>
+      <div class="card shadow-sm mb-4 border-0" style="border-radius: 15px; overflow: hidden;">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead style="background: linear-gradient(135deg, #181952, #190f39); color: white;">
+                <tr>
+                  <th class="ps-4 py-3">Professional</th>
+                  <th class="py-3">Date & Time</th>
+                  <th class="py-3">Message</th>
+                  <th class="pe-4 py-3">Status</th>
+                </tr>
+              </thead>
+              <tbody id="userBookingsTableBody">
+                <tr>
+                  <td colspan="4" class="text-center py-5 text-muted">
+                    <div class="spinner-border spinner-border-sm me-2 text-primary" role="status"></div> Loading your requests...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
       <!-- Recent Activity -->
       <div class="mt-5">
         <h4 class="mb-3">Recent Activity</h4>
@@ -213,10 +241,43 @@
         const headers = getAuthHeader();
 
         // 1. Fetch Bookings
-        const bookingsRes = await fetch('/api/bookings/user', { headers });
+        const bookingsRes = await fetch('/api/bookings', { headers });
         if (bookingsRes.ok) {
           const bookings = await bookingsRes.json();
           document.getElementById('bookingCount').textContent = bookings.length;
+
+          const tbody = document.getElementById('userBookingsTableBody');
+          
+          if (bookings.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-5 text-muted">
+              <i class="fas fa-calendar-times fa-3x mb-3 d-block" style="opacity: 0.3;"></i>
+              You haven't sent any booking requests yet.
+            </td></tr>`;
+          } else {
+            tbody.innerHTML = bookings.map(booking => {
+              const statusColors = { pending: 'warning', confirmed: 'success', completed: 'info', cancelled: 'danger' };
+              const statusIcon = { pending: 'clock', confirmed: 'check-circle', completed: 'flag-checkered', cancelled: 'times-circle' };
+              
+              return `<tr>
+                <td class="ps-4">
+                  <strong>${booking.professional_name || 'Unknown Professional'}</strong><br>
+                  <small class="text-muted">${booking.specialization || 'Professional'}</small>
+                </td>
+                <td>
+                  <i class="fas fa-calendar-alt text-primary me-2"></i>${booking.booking_date}<br>
+                  <small class="text-muted"><i class="fas fa-clock me-1"></i>${booking.booking_time}</small>
+                </td>
+                <td>
+                  <small class="text-secondary">${booking.message ? booking.message.substring(0, 50) + (booking.message.length > 50 ? '...' : '') : 'No message provided'}</small>
+                </td>
+                <td class="pe-4">
+                  <span class="badge bg-${statusColors[booking.status] || 'secondary'} px-3 py-2 rounded-pill shadow-sm">
+                    <i class="fas fa-${statusIcon[booking.status] || 'circle'} me-1"></i> ${booking.status.toUpperCase()}
+                  </span>
+                </td>
+              </tr>`;
+            }).join('');
+          }
         }
 
         // 2. Fetch Cost Estimates
