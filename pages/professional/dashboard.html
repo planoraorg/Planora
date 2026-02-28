@@ -587,12 +587,36 @@
                     body: JSON.stringify({ status })
                 });
                 if (response.ok) {
-                    alert(`✅ Booking ${status}!`);
+                    if (status === 'confirmed') {
+                        showFeedbackModal('Booking Confirmed!', 'The client has been notified of your approval.', 'success');
+                    } else if (status === 'cancelled') {
+                        showFeedbackModal('Booking Declined', 'The request has been cancelled.', 'danger');
+                    }
                     loadBookings();
+                } else {
+                    showFeedbackModal('Action Failed', 'Could not update the booking status. Please try again.', 'danger');
                 }
             } catch (error) {
                 console.error('Error:', error);
+                showFeedbackModal('Connection Error', 'Could not connect to the server.', 'danger');
             }
+        }
+
+        function showFeedbackModal(title, message, type = 'success') {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            
+            const iconContainer = document.getElementById('modalIcon');
+            if (type === 'success') {
+                iconContainer.innerHTML = '<i class="fas fa-check-circle fa-3x text-success"></i>';
+            } else {
+                iconContainer.innerHTML = '<i class="fas fa-times-circle fa-3x text-danger"></i>';
+            }
+            
+            // Check if the modal instance already exists so we don't recreate it
+            let modalElement = document.getElementById('feedbackModal');
+            let modalObj = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+            modalObj.show();
         }
 
         // Load data when page and DOM are fully loaded
@@ -602,6 +626,20 @@
             loadBookings(); // Load bookings too!
         });
     </script>
+
+    <!-- Feedback Modal -->
+    <div class="modal fade" id="feedbackModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 15px;">
+                <div class="modal-body text-center p-5">
+                    <div id="modalIcon" class="mb-3"></div>
+                    <h4 id="modalTitle" class="mb-3" style="color: #14213d; font-weight: 700;"></h4>
+                    <p id="modalMessage" class="text-muted"></p>
+                    <button type="button" class="btn btn-primary px-4 mt-3" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Dynamic Footer Container -->
     <div id="planora-footer"></div>
