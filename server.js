@@ -776,15 +776,10 @@ app.put("/api/bookings/:id/status", authenticateToken, async (req, res) => {
       return res.status(403).json({ message: "Unauthorized to update this booking" });
     }
 
-    if (status === 'cancelled') {
-      // Delete the booking entirely if declined by professional
-      await db.collection("bookings").doc(bookingId).delete();
-      res.json({ message: "Booking has been declined and removed." });
-    } else {
-      // Update status if confirmed
-      await db.collection("bookings").doc(bookingId).update({ status });
-      res.json({ message: `Booking status updated to ${status}` });
-    }
+    // Update status to 'confirmed' or 'cancelled' so it persists on the user side too
+    await db.collection("bookings").doc(bookingId).update({ status });
+    res.json({ message: `Booking status updated to ${status}` });
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
